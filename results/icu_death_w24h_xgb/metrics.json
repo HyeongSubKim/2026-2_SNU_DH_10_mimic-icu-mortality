@@ -1,0 +1,78 @@
+{
+ "best_trial": 83,
+ "best_params": {
+  "max_depth": 9,
+  "learning_rate": 0.010923196381521514,
+  "min_child_weight": 22.043020246242236,
+  "subsample": 0.5188571676624477,
+  "colsample_bytree": 0.5416053252740652,
+  "reg_lambda": 6.819762341063427,
+  "scale_pos_weight": 5.889085824144774
+ },
+ "best_iteration": 529,
+ "val_auroc_optuna": 0.8789229783648083,
+ "native_nan": false,
+ "val": {
+  "auroc": 0.8789229689992922,
+  "auprc": 0.36353051746539167,
+  "auprc2": 0.36353051746539167,
+  "average_precision": 0.3635532320227638
+ },
+ "test": {
+  "auroc": 0.8884614333880896,
+  "auprc": 0.3794527921092884,
+  "auprc2": 0.3794527921092884,
+  "average_precision": 0.37947538421502136
+ },
+ "test_key_feat_ablation": {
+  "auroc": 0.8814895582839624,
+  "auprc": 0.34137697850559,
+  "auprc2": 0.34137697850559,
+  "average_precision": 0.3414003666002433
+ },
+ "features": [
+  "ADBP mmHg",
+  "ASBP mmHg",
+  "BT ℃",
+  "Base Excess",
+  "DBP mmHg",
+  "FIO2_",
+  "Flow rate L/min",
+  "HR 회/min",
+  "Mean ABP mmHg",
+  "Mean BP mmHg",
+  "RR 회/min",
+  "SBP mmHg",
+  "SpO2 %",
+  "age",
+  "height cm",
+  "io_balance",
+  "sex",
+  "total_input",
+  "total_output",
+  "weight kg"
+ ],
+ "n_trials": 100,
+ "importances_gain": {
+  "ADBP mmHg": 109.1192398071289,
+  "ASBP mmHg": 229.2248992919922,
+  "BT ℃": 153.05650329589844,
+  "Base Excess": 602.6067504882812,
+  "DBP mmHg": 97.35989379882812,
+  "FIO2_": 389.3824462890625,
+  "Flow rate L/min": 188.26318359375,
+  "HR 회/min": 208.3807373046875,
+  "Mean ABP mmHg": 197.29745483398438,
+  "Mean BP mmHg": 193.02012634277344,
+  "RR 회/min": 142.52517700195312,
+  "SBP mmHg": 162.94366455078125,
+  "SpO2 %": 948.1273193359375,
+  "age": 151.01727294921875,
+  "height cm": 103.57618713378906,
+  "io_balance": 149.9053192138672,
+  "sex": 74.02520751953125,
+  "total_input": 102.44668579101562,
+  "total_output": 147.82626342773438,
+  "weight kg": 106.55613708496094
+ }
+}
