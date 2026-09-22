@@ -32,7 +32,7 @@ Cohort with the 24 h window: 50,276 stays (3,391 deaths), 5.09 M hourly rows, 82
 |---|---|---|---|---|
 | XGBoost, native NaN (`--native-nan`) | 0.891 | **0.894** | **0.394** | 0.888 |
 | XGBoost, train-median fill | 0.879 | 0.889 | 0.380 | 0.882 |
-| RandomForest (notebook protocol) | TBD | TBD | TBD | TBD |
+| RandomForest (notebook protocol, 100 trials) | 0.864 | 0.875 | 0.334 | 0.867 |
 
 † `Base Excess` replaced by the train median (or NaN in native-NaN mode) at test time — the notebook's "key-feature" ablation.
 
@@ -78,7 +78,7 @@ python scripts/00_extract_icu_events.py                          # big tables ->
 python scripts/01_build_dataset.py --event death --pre-window 24 # hourly grid + labels + split -> data/icu_death_w24h.csv
 python scripts/04_train_xgb.py data/icu_death_w24h.csv icu_death_w24h_xgb_nan --native-nan --device cuda:0
 python scripts/04_train_xgb.py data/icu_death_w24h.csv icu_death_w24h_xgb --device cuda:0
-python scripts/02_train_rf.py  data/icu_death_w24h.csv icu_death_w24h_rf --n-trials 200 --n-jobs 16 --resume
+python scripts/02_train_rf.py  data/icu_death_w24h.csv icu_death_w24h_rf --n-trials 100 --n-jobs 16 --resume
 python scripts/06_shap_curves.py --task hourly --prefix icu_death_w24h --device cuda:0
 python scripts/03_eda.py --event death --dataset data/icu_death_w24h.csv   # results/eda_icu_death_w24h/EDA.md
 python scripts/05_early_window.py --dataset data/icu_death_w24h.csv --windows 1 3 6 12 24 48 72 120 168

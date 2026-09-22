@@ -1,0 +1,72 @@
+{
+ "best_trial": 76,
+ "best_params": {
+  "max_depth": 10,
+  "max_leaf_nodes": 409,
+  "n_estimators": 272
+ },
+ "val_auroc_optuna": 0.8636251396974609,
+ "val": {
+  "auroc": 0.8636251396974609,
+  "auprc": 0.313386002819172,
+  "auprc2": 0.313386002819172,
+  "average_precision": 0.31342068192325456
+ },
+ "test": {
+  "auroc": 0.8745872514179472,
+  "auprc": 0.3343909253433796,
+  "auprc2": 0.3343909253433796,
+  "average_precision": 0.33442217549665704
+ },
+ "test_key_feat_ablation": {
+  "auroc": 0.866829169194324,
+  "auprc": 0.3049413601394715,
+  "auprc2": 0.3049413601394715,
+  "average_precision": 0.304971425061591
+ },
+ "features": [
+  "ADBP mmHg",
+  "ASBP mmHg",
+  "BT ℃",
+  "Base Excess",
+  "DBP mmHg",
+  "FIO2_",
+  "Flow rate L/min",
+  "HR 회/min",
+  "Mean ABP mmHg",
+  "Mean BP mmHg",
+  "RR 회/min",
+  "SBP mmHg",
+  "SpO2 %",
+  "age",
+  "height cm",
+  "io_balance",
+  "sex",
+  "total_input",
+  "total_output",
+  "weight kg"
+ ],
+ "n_trials": 100,
+ "importances": {
+  "ADBP mmHg": 0.013460750217494438,
+  "ASBP mmHg": 0.06320475660133507,
+  "BT ℃": 0.020963257980386885,
+  "Base Excess": 0.16498267720364174,
+  "DBP mmHg": 0.01920240345343924,
+  "FIO2_": 0.10073984654649068,
+  "Flow rate L/min": 0.04374456812063062,
+  "HR 회/min": 0.03927777587534332,
+  "Mean ABP mmHg": 0.04956355913525619,
+  "Mean BP mmHg": 0.0644538153714125,
+  "RR 회/min": 0.011897575051630634,
+  "SBP mmHg": 0.054094392731512814,
+  "SpO2 %": 0.16048953601173543,
+  "age": 0.048139513183605376,
+  "height cm": 0.005598056352860767,
+  "io_balance": 0.059508721424694246,
+  "sex": 0.0008784067262745128,
+  "total_input": 0.016214037208960676,
+  "total_output": 0.04667264968887691,
+  "weight kg": 0.016913701114418093
+ }
+}
