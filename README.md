@@ -55,15 +55,20 @@ Shorter horizon → sharper physiological signal → higher AUROC; the 24 h mode
 ### Stay-level "first W hours" experiment (`05_early_window.py`)
 
 Observe only the first W hours after ICU admission and predict whether the stay ends in death
-(stays that end inside the window are excluded). XGBoost, test AUROC / AUPRC:
+(stays that end inside the window are excluded, so the cohort shrinks and gets sicker as W grows).
+Test AUROC / AUPRC on each window's own cohort:
 
 | W (h) | 1 | 3 | 6 | 12 | 24 | 48 | 72 | 120 | 168 |
 |---|---|---|---|---|---|---|---|---|---|
-| AUROC | 0.771 | 0.821 | 0.838 | 0.858 | **0.864** | 0.848 | 0.850 | 0.821 | 0.806 |
-| AUPRC | 0.289 | 0.355 | 0.390 | 0.443 | 0.433 | 0.469 | 0.501 | 0.490 | 0.511 |
+| XGBoost AUROC | 0.782 | 0.815 | 0.832 | 0.861 | **0.880** | 0.867 | 0.836 | 0.809 | 0.812 |
+| RandomForest AUROC | 0.765 | 0.808 | 0.824 | 0.847 | 0.861 | 0.842 | 0.824 | 0.772 | 0.761 |
+| XGBoost AUPRC | 0.240 | 0.266 | 0.292 | 0.343 | 0.433 | 0.469 | 0.419 | 0.467 | 0.482 |
+| test stays | 7,484 | 7,472 | 7,453 | 7,409 | 6,390 | 4,063 | 2,715 | 1,501 | 1,005 |
+| event rate | .065 | .065 | .065 | .066 | .076 | .095 | .115 | .161 | .172 |
 
-Discrimination saturates at **W = 12–24 h**; the decline afterwards is a cohort effect (only long, sicker stays
-survive a long window: event rate 8 % → 18 %). See `results/early_window_death/summary.md` and `saturation.png`.
+Discrimination saturates at **W = 12–24 h**; the decline afterwards is the cohort shift (long, sicker stays).
+`results/early_window_death/summary.md` also reports AUROC by time-to-death after the window and on the common
+cohort of stays longer than 168 h (`saturation.png`); curves and SHAP per window are in `results/shap_early_death/`.
 
 ## Pipeline
 

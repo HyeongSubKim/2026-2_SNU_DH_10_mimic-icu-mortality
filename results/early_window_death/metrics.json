@@ -1,0 +1,956 @@
+{
+ "1": {
+  "window_h": 1,
+  "excluded": {
+   "event_within_W": 0,
+   "discharged_within_W": 90
+  },
+  "n_stays": {
+   "train": 35099,
+   "val": 7603,
+   "test": 7484
+  },
+  "event_rate": {
+   "train": 0.06806461722556198,
+   "val": 0.06786794686308037,
+   "test": 0.06493853554249064
+  },
+  "n_features": 92,
+  "models": {
+   "xgb": {
+    "val_auroc": 0.7486123462218736,
+    "test_auroc": 0.7816870369782313,
+    "test_auprc": 0.23956861662479995,
+    "by_time_to_death": {
+     "death_le_24h": {
+      "n_pos": 6,
+      "auroc": null
+     },
+     "death_24_72h": {
+      "n_pos": 171,
+      "auroc": 0.81899465010053
+     },
+     "death_gt_72h": {
+      "n_pos": 309,
+      "auroc": 0.7625003352784105
+     }
+    },
+    "best_params": {
+     "max_depth": 8,
+     "learning_rate": 0.018576889463812286,
+     "min_child_weight": 5.199358929524835,
+     "subsample": 0.6547650272182419,
+     "colsample_bytree": 0.37331639698049307,
+     "reg_lambda": 5.907860419902413,
+     "scale_pos_weight": 2.1342912995330625
+    },
+    "top_features": {
+     "FIO2___min": 42.06732177734375,
+     "FIO2___last": 28.510263442993164,
+     "FIO2___max": 24.46933364868164,
+     "FIO2___count": 22.184755325317383,
+     "FIO2___mean": 19.65107536315918,
+     "RR 회/min__mean": 18.202098846435547,
+     "height cm__count": 17.20412826538086,
+     "age": 16.802167892456055,
+     "RR 회/min__last": 16.635356903076172,
+     "Base Excess__max": 15.93372917175293,
+     "Base Excess__last": 15.553369522094727,
+     "Base Excess__min": 14.712919235229492,
+     "Base Excess__mean": 14.463553428649902,
+     "height cm__min": 13.00501537322998,
+     "SBP mmHg__min": 12.96605396270752
+    }
+   },
+   "rf": {
+    "val_auroc": 0.7383591038510298,
+    "test_auroc": 0.7652115772054802,
+    "test_auprc": 0.22299781607520225,
+    "by_time_to_death": {
+     "death_le_24h": {
+      "n_pos": 6,
+      "auroc": null
+     },
+     "death_24_72h": {
+      "n_pos": 171,
+      "auroc": 0.8018907657827048
+     },
+     "death_gt_72h": {
+      "n_pos": 309,
+      "auroc": 0.7468992527684747
+     }
+    },
+    "best_params": {
+     "max_depth": 9,
+     "max_leaf_nodes": 174,
+     "n_estimators": 427
+    },
+    "top_features": {
+     "age": 0.06372100075118949,
+     "RR 회/min__mean": 0.04547965421419886,
+     "RR 회/min__last": 0.03884339884014791,
+     "RR 회/min__max": 0.03730328529253385,
+     "FIO2___count": 0.03635924156508256,
+     "RR 회/min__min": 0.03335150728919387,
+     "SBP mmHg__min": 0.030043169699015982,
+     "FIO2___min": 0.026540167248301456,
+     "FIO2___mean": 0.024279370525874505,
+     "Base Excess__max": 0.023336545931856845,
+     "SBP mmHg__last": 0.022994489398365108,
+     "Base Excess__min": 0.022566654342228314,
+     "FIO2___last": 0.02216643356966171,
+     "Base Excess__mean": 0.021815685021103995,
+     "SBP mmHg__mean": 0.02135330756165314
+    }
+   }
+  }
+ },
+ "3": {
+  "window_h": 3,
+  "excluded": {
+   "event_within_W": 0,
+   "discharged_within_W": 190
+  },
+  "n_stays": {
+   "train": 35029,
+   "val": 7585,
+   "test": 7472
+  },
+  "event_rate": {
+   "train": 0.06820063376059836,
+   "val": 0.06802900461437046,
+   "test": 0.06504282655246253
+  },
+  "n_features": 92,
+  "models": {
+   "xgb": {
+    "val_auroc": 0.7969558921418005,
+    "test_auroc": 0.8145598958057207,
+    "test_auprc": 0.2658555928945508,
+    "by_time_to_death": {
+     "death_le_24h": {
+      "n_pos": 16,
+      "auroc": 0.8033119811050672
+     },
+     "death_24_72h": {
+      "n_pos": 170,
+      "auroc": 0.8552495747798118
+     },
+     "death_gt_72h": {
+      "n_pos": 300,
+      "auroc": 0.7921022998377707
+     }
+    },
+    "best_params": {
+     "max_depth": 5,
+     "learning_rate": 0.0663159749322543,
+     "min_child_weight": 5.42201410756221,
+     "subsample": 0.7011828644071014,
+     "colsample_bytree": 0.3791284904860774,
+     "reg_lambda": 0.21932722246475694,
+     "scale_pos_weight": 7.324423123891015
+    },
+    "top_features": {
+     "FIO2___last": 162.6896209716797,
+     "FIO2___min": 129.19630432128906,
+     "Base Excess__mean": 75.17837524414062,
+     "Base Excess__max": 72.21019744873047,
+     "FIO2___max": 68.98775482177734,
+     "Base Excess__min": 68.81317138671875,
+     "Base Excess__last": 66.49992370605469,
+     "RR 회/min__min": 65.38884735107422,
+     "Base Excess__count": 65.36864471435547,
+     "RR 회/min__mean": 65.32402038574219,
+     "age": 63.41627502441406,
+     "FIO2___mean": 59.643672943115234,
+     "SBP mmHg__min": 53.77562713623047,
+     "Mean BP mmHg__max": 52.103965759277344,
+     "RR 회/min__max": 49.5456657409668
+    }
+   },
+   "rf": {
+    "val_auroc": 0.78295793622334,
+    "test_auroc": 0.8075829790091648,
+    "test_auprc": 0.2482730670315618,
+    "by_time_to_death": {
+     "death_le_24h": {
+      "n_pos": 16,
+      "auroc": 0.7890871027769826
+     },
+     "death_24_72h": {
+      "n_pos": 170,
+      "auroc": 0.8423254071167546
+     },
+     "death_gt_72h": {
+      "n_pos": 300,
+      "auroc": 0.7888820498139136
+     }
+    },
+    "best_params": {
+     "max_depth": 12,
+     "max_leaf_nodes": 269,
+     "n_estimators": 329
+    },
+    "top_features": {
+     "RR 회/min__mean": 0.041998533501481895,
+     "FIO2___count": 0.041837653699093785,
+     "age": 0.04093433807723872,
+     "RR 회/min__min": 0.03434335904358971,
+     "Base Excess__max": 0.032014594481657645,
+     "RR 회/min__max": 0.03018103897150677,
+     "Base Excess__mean": 0.028764272669077936,
+     "Base Excess__last": 0.027764248111661356,
+     "RR 회/min__last": 0.026573831013309145,
+     "FIO2___last": 0.02514554443090839,
+     "Base Excess__min": 0.024591263882089456,
+     "SBP mmHg__min": 0.024520119803821763,
+     "FIO2___mean": 0.024228000588760065,
+     "FIO2___min": 0.021090360559889915,
+     "Mean BP mmHg__min": 0.01971785031300045
+    }
+   }
+  }
+ },
+ "6": {
+  "window_h": 6,
+  "excluded": {
+   "event_within_W": 0,
+   "discharged_within_W": 298
+  },
+  "n_stays": {
+   "train": 34956,
+   "val": 7569,
+   "test": 7453
+  },
+  "event_rate": {
+   "train": 0.06834305984666438,
+   "val": 0.06817281014665082,
+   "test": 0.06520864081577889
+  },
+  "n_features": 92,
+  "models": {
+   "xgb": {
+    "val_auroc": 0.8263939035233784,
+    "test_auroc": 0.8318850004813995,
+    "test_auprc": 0.29196624047982866,
+    "by_time_to_death": {
+     "death_le_24h": {
+      "n_pos": 26,
+      "auroc": 0.8992337503174305
+     },
+     "death_24_72h": {
+      "n_pos": 166,
+      "auroc": 0.868439165013722
+     },
+     "death_gt_72h": {
+      "n_pos": 294,
+      "auroc": 0.805289562358602
+     }
+    },
+    "best_params": {
+     "max_depth": 7,
+     "learning_rate": 0.011640489951246806,
+     "min_child_weight": 82.36668667428616,
+     "subsample": 0.584966175226207,
+     "colsample_bytree": 0.4485015597117609,
+     "reg_lambda": 0.010151451321210678,
+     "scale_pos_weight": 12.455864240032922
+    },
+    "top_features": {
+     "Base Excess__max": 142.25701904296875,
+     "FIO2___last": 141.1275634765625,
+     "FIO2___max": 134.8497314453125,
+     "FIO2___min": 133.0865020751953,
+     "Base Excess__mean": 114.13235473632812,
+     "FIO2___mean": 89.05963134765625,
+     "RR 회/min__min": 85.32360076904297,
+     "RR 회/min__mean": 81.45085144042969,
+     "FIO2___count": 79.3525161743164,
+     "height cm__count": 75.74819946289062,
+     "Base Excess__count": 73.37582397460938,
+     "SBP mmHg__min": 69.06697845458984,
+     "age": 62.28957748413086,
+     "Base Excess__min": 60.76249313354492,
+     "SBP mmHg__count": 56.5517692565918
+    }
+   },
+   "rf": {
+    "val_auroc": 0.8114155337714339,
+    "test_auroc": 0.8243187608130275,
+    "test_auprc": 0.2769560954625147,
+    "by_time_to_death": {
+     "death_le_24h": {
+      "n_pos": 26,
+      "auroc": 0.8750538251758289
+     },
+     "death_24_72h": {
+      "n_pos": 166,
+      "auroc": 0.8579430395617202
+     },
+     "death_gt_72h": {
+      "n_pos": 294,
+      "auroc": 0.8008468494330414
+     }
+    },
+    "best_params": {
+     "max_depth": 12,
+     "max_leaf_nodes": 363,
+     "n_estimators": 239
+    },
+    "top_features": {
+     "RR 회/min__mean": 0.04021512814810429,
+     "Base Excess__max": 0.03907936707166345,
+     "age": 0.03671438491264619,
+     "FIO2___count": 0.034786890312954684,
+     "RR 회/min__min": 0.03264083156624004,
+     "Base Excess__mean": 0.030638678858622623,
+     "Base Excess__min": 0.028356085365096904,
+     "Base Excess__last": 0.027113656116111905,
+     "FIO2___mean": 0.024781331620158047,
+     "FIO2___last": 0.024001725197075323,
+     "Base Excess__count": 0.02328477429796351,
+     "RR 회/min__max": 0.020979774361365194,
+     "HR 회/min__mean": 0.018713713038197546,
+     "FIO2___min": 0.018340273536884236,
+     "SBP mmHg__min": 0.01809093847630996
+    }
+   }
+  }
+ },
+ "12": {
+  "window_h": 12,
+  "excluded": {
+   "event_within_W": 0,
+   "discharged_within_W": 580
+  },
+  "n_stays": {
+   "train": 34764,
+   "val": 7523,
+   "test": 7409
+  },
+  "event_rate": {
+   "train": 0.06872051547577954,
+   "val": 0.06858965838096504,
+   "test": 0.06559589688217034
+  },
+  "n_features": 92,
+  "models": {
+   "xgb": {
+    "val_auroc": 0.8442360518772478,
+    "test_auroc": 0.8606669246484998,
+    "test_auprc": 0.3431289954111945,
+    "by_time_to_death": {
+     "death_le_24h": {
+      "n_pos": 50,
+      "auroc": 0.923972266358515
+     },
+     "death_24_72h": {
+      "n_pos": 147,
+      "auroc": 0.8974619748231519
+     },
+     "death_gt_72h": {
+      "n_pos": 289,
+      "auroc": 0.8309986220146774
+     }
+    },
+    "best_params": {
+     "max_depth": 6,
+     "learning_rate": 0.025310862892219697,
+     "min_child_weight": 13.361208738164201,
+     "subsample": 0.589077579949006,
+     "colsample_bytree": 0.4595391893967983,
+     "reg_lambda": 0.08773919382565887,
+     "scale_pos_weight": 1.0439842805162431
+    },
+    "top_features": {
+     "Base Excess__mean": 28.689281463623047,
+     "FIO2___last": 28.277814865112305,
+     "FIO2___min": 26.606651306152344,
+     "Base Excess__min": 23.022111892700195,
+     "FIO2___max": 22.3845157623291,
+     "Base Excess__last": 21.655017852783203,
+     "DBP mmHg__count": 21.238096237182617,
+     "RR 회/min__mean": 16.88847541809082,
+     "Base Excess__max": 16.261940002441406,
+     "FIO2___mean": 15.399432182312012,
+     "age": 15.065085411071777,
+     "SBP mmHg__count": 14.640469551086426,
+     "RR 회/min__min": 14.619121551513672,
+     "FIO2___count": 14.10859203338623,
+     "Flow rate L/min__last": 13.94487476348877
+    }
+   },
+   "rf": {
+    "val_auroc": 0.8300170206316386,
+    "test_auroc": 0.846982593359405,
+    "test_auprc": 0.322932638983549,
+    "by_time_to_death": {
+     "death_le_24h": {
+      "n_pos": 50,
+      "auroc": 0.894459049544995
+     },
+     "death_24_72h": {
+      "n_pos": 147,
+      "auroc": 0.8853953252541809
+     },
+     "death_gt_72h": {
+      "n_pos": 289,
+      "auroc": 0.8192300175884307
+     }
+    },
+    "best_params": {
+     "max_depth": 12,
+     "max_leaf_nodes": 505,
+     "n_estimators": 422
+    },
+    "top_features": {
+     "FIO2___count": 0.035908545915007105,
+     "RR 회/min__mean": 0.034779488672012755,
+     "Base Excess__mean": 0.034069228197899835,
+     "Base Excess__min": 0.032122291855311784,
+     "Base Excess__count": 0.03175100052977791,
+     "age": 0.03076142369054948,
+     "FIO2___mean": 0.03009643156104246,
+     "RR 회/min__min": 0.02682571486487449,
+     "Base Excess__last": 0.026133694764800326,
+     "Base Excess__max": 0.025847620892924614,
+     "BT ℃__mean": 0.019235606237830376,
+     "HR 회/min__mean": 0.016760959005462137,
+     "RR 회/min__max": 0.01662143251627708,
+     "HR 회/min__last": 0.01628929642073016,
+     "FIO2___min": 0.016130798319419885
+    }
+   }
+  }
+ },
+ "24": {
+  "window_h": 24,
+  "excluded": {
+   "event_within_W": 1,
+   "discharged_within_W": 6928
+  },
+  "n_stays": {
+   "train": 30393,
+   "val": 6564,
+   "test": 6390
+  },
+  "event_rate": {
+   "train": 0.07857072352186359,
+   "val": 0.07861060329067641,
+   "test": 0.07605633802816901
+  },
+  "n_features": 92,
+  "models": {
+   "xgb": {
+    "val_auroc": 0.866352769574669,
+    "test_auroc": 0.8803921732632963,
+    "test_auprc": 0.4325840893601602,
+    "by_time_to_death": {
+     "death_le_24h": {
+      "n_pos": 100,
+      "auroc": 0.9464481707317073
+     },
+     "death_24_72h": {
+      "n_pos": 110,
+      "auroc": 0.9027454422271496
+     },
+     "death_gt_72h": {
+      "n_pos": 276,
+      "auroc": 0.8475499293036409
+     }
+    },
+    "best_params": {
+     "max_depth": 6,
+     "learning_rate": 0.02445927214305297,
+     "min_child_weight": 18.574265250336367,
+     "subsample": 0.5738394071766796,
+     "colsample_bytree": 0.4708652314658235,
+     "reg_lambda": 0.05099685473493575,
+     "scale_pos_weight": 1.7015192966182573
+    },
+    "top_features": {
+     "FIO2___count": 57.78084182739258,
+     "Base Excess__min": 54.86817169189453,
+     "FIO2___last": 41.045631408691406,
+     "Flow rate L/min__last": 40.6978874206543,
+     "Base Excess__mean": 32.5156135559082,
+     "FIO2___max": 31.68003273010254,
+     "Base Excess__last": 29.65619659423828,
+     "FIO2___min": 25.530685424804688,
+     "Flow rate L/min__mean": 20.134458541870117,
+     "RR 회/min__mean": 19.98238754272461,
+     "FIO2___mean": 18.918066024780273,
+     "Flow rate L/min__min": 18.756729125976562,
+     "Flow rate L/min__max": 17.91615867614746,
+     "total_output__max": 17.432823181152344,
+     "age": 17.181781768798828
+    }
+   },
+   "rf": {
+    "val_auroc": 0.8516089629219474,
+    "test_auroc": 0.861097519154204,
+    "test_auprc": 0.3664351151064298,
+    "by_time_to_death": {
+     "death_le_24h": {
+      "n_pos": 100,
+      "auroc": 0.9188397696476964
+     },
+     "death_24_72h": {
+      "n_pos": 110,
+      "auroc": 0.885279625523528
+     },
+     "death_gt_72h": {
+      "n_pos": 276,
+      "auroc": 0.8305386178861789
+     }
+    },
+    "best_params": {
+     "max_depth": 12,
+     "max_leaf_nodes": 371,
+     "n_estimators": 424
+    },
+    "top_features": {
+     "FIO2___count": 0.04791421348600794,
+     "Base Excess__min": 0.03739585020720462,
+     "Base Excess__mean": 0.03469358928683659,
+     "Flow rate L/min__count": 0.032984074987118035,
+     "RR 회/min__mean": 0.031176698746642584,
+     "Base Excess__count": 0.030935653424336726,
+     "FIO2___mean": 0.02609346830981064,
+     "Base Excess__last": 0.0260509933068452,
+     "age": 0.022086951062410126,
+     "Base Excess__max": 0.021684652617654936,
+     "Flow rate L/min__mean": 0.019493118059347732,
+     "RR 회/min__min": 0.01931104872925711,
+     "FIO2___min": 0.0184032098973722,
+     "BT ℃__mean": 0.017702564038580695,
+     "HR 회/min__max": 0.017631554121864366
+    }
+   }
+  }
+ },
+ "48": {
+  "window_h": 48,
+  "excluded": {
+   "event_within_W": 652,
+   "discharged_within_W": 22123
+  },
+  "n_stays": {
+   "train": 19259,
+   "val": 4179,
+   "test": 4063
+  },
+  "event_rate": {
+   "train": 0.10052443013655953,
+   "val": 0.09978463747307968,
+   "test": 0.09500369185331037
+  },
+  "n_features": 92,
+  "models": {
+   "xgb": {
+    "val_auroc": 0.8482642912783012,
+    "test_auroc": 0.8670809020081418,
+    "test_auprc": 0.4685833957982438,
+    "by_time_to_death": {
+     "death_le_24h": {
+      "n_pos": 75,
+      "auroc": 0.9313824675913335
+     },
+     "death_24_72h": {
+      "n_pos": 70,
+      "auroc": 0.892575469132445
+     },
+     "death_gt_72h": {
+      "n_pos": 241,
+      "auroc": 0.8396649803590109
+     }
+    },
+    "best_params": {
+     "max_depth": 5,
+     "learning_rate": 0.050122196480938984,
+     "min_child_weight": 6.464530966235372,
+     "subsample": 0.7717872684139033,
+     "colsample_bytree": 0.7204780035564791,
+     "reg_lambda": 1.6552270825922377,
+     "scale_pos_weight": 2.1133020967460627
+    },
+    "top_features": {
+     "FIO2___count": 107.05728912353516,
+     "Flow rate L/min__last": 53.36915588378906,
+     "Base Excess__min": 44.61772537231445,
+     "Base Excess__last": 44.57857131958008,
+     "total_output__mean": 32.104591369628906,
+     "FIO2___max": 31.827342987060547,
+     "Base Excess__count": 25.38856315612793,
+     "RR 회/min__mean": 24.26715850830078,
+     "total_output__max": 23.53524398803711,
+     "Base Excess__mean": 23.253631591796875,
+     "Flow rate L/min__mean": 22.737485885620117,
+     "SBP mmHg__last": 21.435396194458008,
+     "total_output__last": 21.419336318969727,
+     "FIO2___last": 20.964616775512695,
+     "Flow rate L/min__max": 20.645719528198242
+    }
+   },
+   "rf": {
+    "val_auroc": 0.8276154196260216,
+    "test_auroc": 0.8416715868562595,
+    "test_auprc": 0.374802661379912,
+    "by_time_to_death": {
+     "death_le_24h": {
+      "n_pos": 75,
+      "auroc": 0.8809573021484907
+     },
+     "death_24_72h": {
+      "n_pos": 70,
+      "auroc": 0.8749252107696491
+     },
+     "death_gt_72h": {
+      "n_pos": 241,
+      "auroc": 0.8197870129108047
+     }
+    },
+    "best_params": {
+     "max_depth": 11,
+     "max_leaf_nodes": 262,
+     "n_estimators": 384
+    },
+    "top_features": {
+     "FIO2___count": 0.06533916423965257,
+     "Flow rate L/min__count": 0.0406991128194633,
+     "Base Excess__count": 0.03082762116775514,
+     "total_output__mean": 0.03004405260695815,
+     "Base Excess__min": 0.030016783038781813,
+     "Base Excess__last": 0.027600454915503263,
+     "Flow rate L/min__last": 0.026343999861365253,
+     "Base Excess__mean": 0.026203216176150904,
+     "RR 회/min__mean": 0.02505689180681181,
+     "total_output__last": 0.0227302861975255,
+     "total_output__max": 0.022552858947661514,
+     "io_balance__last": 0.022470397588756155,
+     "Flow rate L/min__mean": 0.021086046783241903,
+     "total_output__min": 0.019652028755087234,
+     "BT ℃__mean": 0.01648597926995803
+    }
+   }
+  }
+ },
+ "72": {
+  "window_h": 72,
+  "excluded": {
+   "event_within_W": 1119,
+   "discharged_within_W": 30652
+  },
+  "n_stays": {
+   "train": 12960,
+   "val": 2830,
+   "test": 2715
+  },
+  "event_rate": {
+   "train": 0.1246141975308642,
+   "val": 0.12226148409893993,
+   "test": 0.114548802946593
+  },
+  "n_features": 92,
+  "models": {
+   "xgb": {
+    "val_auroc": 0.8414663092345928,
+    "test_auroc": 0.8362014541680265,
+    "test_auprc": 0.41876640711431234,
+    "by_time_to_death": {
+     "death_le_24h": {
+      "n_pos": 35,
+      "auroc": 0.8930235322082244
+     },
+     "death_24_72h": {
+      "n_pos": 77,
+      "auroc": 0.8364576355424941
+     },
+     "death_gt_72h": {
+      "n_pos": 199,
+      "auroc": 0.8261084958904338
+     }
+    },
+    "best_params": {
+     "max_depth": 8,
+     "learning_rate": 0.012126076861442476,
+     "min_child_weight": 44.51371603613079,
+     "subsample": 0.5048535487495367,
+     "colsample_bytree": 0.678651957548679,
+     "reg_lambda": 4.271768952458899,
+     "scale_pos_weight": 11.433008977202956
+    },
+    "top_features": {
+     "Flow rate L/min__last": 110.23619842529297,
+     "FIO2___count": 94.19979858398438,
+     "io_balance__last": 64.4403305053711,
+     "Base Excess__min": 45.093658447265625,
+     "Base Excess__last": 45.03800964355469,
+     "Base Excess__count": 43.320438385009766,
+     "total_output__mean": 40.65633773803711,
+     "Flow rate L/min__count": 34.95746612548828,
+     "RR 회/min__mean": 33.69940948486328,
+     "HR 회/min__last": 33.3754768371582,
+     "Flow rate L/min__min": 32.78337097167969,
+     "Flow rate L/min__mean": 31.89187240600586,
+     "RR 회/min__min": 31.81671714782715,
+     "age": 31.73568344116211,
+     "BT ℃__mean": 31.575790405273438
+    }
+   },
+   "rf": {
+    "val_auroc": 0.8069343218564129,
+    "test_auroc": 0.8240419236963046,
+    "test_auprc": 0.379138276539106,
+    "by_time_to_death": {
+     "death_le_24h": {
+      "n_pos": 35,
+      "auroc": 0.8802115521749465
+     },
+     "death_24_72h": {
+      "n_pos": 77,
+      "auroc": 0.8196836441428786
+     },
+     "death_gt_72h": {
+      "n_pos": 199,
+      "auroc": 0.81584921278606
+     }
+    },
+    "best_params": {
+     "max_depth": 12,
+     "max_leaf_nodes": 205,
+     "n_estimators": 412
+    },
+    "top_features": {
+     "io_balance__last": 0.04848379187949811,
+     "FIO2___count": 0.04788333399024059,
+     "Flow rate L/min__count": 0.03789197129326793,
+     "Flow rate L/min__last": 0.0351796388995962,
+     "total_output__mean": 0.02632033856021074,
+     "RR 회/min__mean": 0.02453559454668966,
+     "Base Excess__min": 0.023586328536549954,
+     "Base Excess__count": 0.023397841308730526,
+     "total_output__last": 0.02261620850294085,
+     "Base Excess__mean": 0.02214864603132722,
+     "Base Excess__last": 0.0219088412349233,
+     "io_balance__min": 0.02082516568097358,
+     "total_output__max": 0.020613293882502756,
+     "total_output__min": 0.01981657073446899,
+     "age": 0.018507453833459014
+    }
+   }
+  }
+ },
+ "120": {
+  "window_h": 120,
+  "excluded": {
+   "event_within_W": 1708,
+   "discharged_within_W": 38173
+  },
+  "n_stays": {
+   "train": 7295,
+   "val": 1599,
+   "test": 1501
+  },
+  "event_rate": {
+   "train": 0.1618917066483893,
+   "val": 0.16322701688555347,
+   "test": 0.16055962691538975
+  },
+  "n_features": 92,
+  "models": {
+   "xgb": {
+    "val_auroc": 0.8063616422979343,
+    "test_auroc": 0.8091648554304156,
+    "test_auprc": 0.4672464966043804,
+    "by_time_to_death": {
+     "death_le_24h": {
+      "n_pos": 42,
+      "auroc": 0.8317649281934997
+     },
+     "death_24_72h": {
+      "n_pos": 49,
+      "auroc": 0.8349044379656624
+     },
+     "death_gt_72h": {
+      "n_pos": 150,
+      "auroc": 0.7944285714285715
+     }
+    },
+    "best_params": {
+     "max_depth": 6,
+     "learning_rate": 0.038002211901875166,
+     "min_child_weight": 44.36525886734619,
+     "subsample": 0.718295554047862,
+     "colsample_bytree": 0.6304919016186898,
+     "reg_lambda": 0.01700258007035209,
+     "scale_pos_weight": 1.8054574612834429
+    },
+    "top_features": {
+     "io_balance__last": 59.976417541503906,
+     "Base Excess__last": 47.836483001708984,
+     "Base Excess__min": 27.36012077331543,
+     "total_output__mean": 24.920732498168945,
+     "Flow rate L/min__last": 24.011371612548828,
+     "BT ℃__min": 19.42278289794922,
+     "FIO2___last": 19.37515640258789,
+     "Mean ABP mmHg__last": 18.88661766052246,
+     "Mean ABP mmHg__min": 18.270030975341797,
+     "FIO2___count": 18.20792007446289,
+     "BT ℃__mean": 17.106731414794922,
+     "SBP mmHg__last": 16.752038955688477,
+     "Base Excess__mean": 16.530210494995117,
+     "HR 회/min__last": 16.372703552246094,
+     "io_balance__min": 15.916176795959473
+    }
+   },
+   "rf": {
+    "val_auroc": 0.756899701619046,
+    "test_auroc": 0.7715471250740961,
+    "test_auprc": 0.3825394083367789,
+    "by_time_to_death": {
+     "death_le_24h": {
+      "n_pos": 42,
+      "auroc": 0.7620181405895692
+     },
+     "death_24_72h": {
+      "n_pos": 49,
+      "auroc": 0.8012147716229349
+     },
+     "death_gt_72h": {
+      "n_pos": 150,
+      "auroc": 0.7645238095238094
+     }
+    },
+    "best_params": {
+     "max_depth": 7,
+     "max_leaf_nodes": 59,
+     "n_estimators": 302
+    },
+    "top_features": {
+     "io_balance__last": 0.06811790516450042,
+     "total_output__mean": 0.04522922643482308,
+     "io_balance__min": 0.0379410617380267,
+     "Base Excess__last": 0.03217580491213829,
+     "FIO2___count": 0.02969407303524316,
+     "Base Excess__min": 0.026620052530748152,
+     "Flow rate L/min__count": 0.02621836484800687,
+     "io_balance__mean": 0.02472145877539458,
+     "Base Excess__mean": 0.024272935274400782,
+     "Flow rate L/min__last": 0.023998120075544527,
+     "total_output__min": 0.022128047488936473,
+     "total_input__last": 0.02172491425558373,
+     "total_output__last": 0.021034757430192102,
+     "age": 0.020794411577295314,
+     "SBP mmHg__last": 0.019958981546197782
+    }
+   }
+  }
+ },
+ "168": {
+  "window_h": 168,
+  "excluded": {
+   "event_within_W": 2133,
+   "discharged_within_W": 41117
+  },
+  "n_stays": {
+   "train": 4908,
+   "val": 1113,
+   "test": 1005
+  },
+  "event_rate": {
+   "train": 0.1815403422982885,
+   "val": 0.17430368373764601,
+   "test": 0.17213930348258707
+  },
+  "n_features": 92,
+  "models": {
+   "xgb": {
+    "val_auroc": 0.7874819110866809,
+    "test_auroc": 0.8115481880835927,
+    "test_auprc": 0.4820836857927976,
+    "by_time_to_death": {
+     "death_le_24h": {
+      "n_pos": 23,
+      "auroc": 0.8427048494983278
+     },
+     "death_24_72h": {
+      "n_pos": 41,
+      "auroc": 0.811063555347092
+     },
+     "death_gt_72h": {
+      "n_pos": 109,
+      "auroc": 0.8051561397318278
+     }
+    },
+    "best_params": {
+     "max_depth": 5,
+     "learning_rate": 0.10636047954717122,
+     "min_child_weight": 9.002685436643345,
+     "subsample": 0.7901417187281139,
+     "colsample_bytree": 0.5265784165187352,
+     "reg_lambda": 4.076760562636367,
+     "scale_pos_weight": 3.854116794948495
+    },
+    "top_features": {
+     "Base Excess__last": 34.81294250488281,
+     "io_balance__last": 32.55900192260742,
+     "total_output__mean": 25.542264938354492,
+     "BT ℃__min": 21.99313735961914,
+     "Flow rate L/min__last": 21.82811164855957,
+     "Flow rate L/min__count": 21.14218521118164,
+     "Base Excess__mean": 21.075359344482422,
+     "io_balance__min": 20.92403793334961,
+     "total_output__count": 20.64057159423828,
+     "FIO2___last": 19.76859474182129,
+     "Mean ABP mmHg__last": 16.881071090698242,
+     "io_balance__mean": 16.841739654541016,
+     "BT ℃__mean": 16.67460060119629,
+     "total_input__last": 15.966714859008789,
+     "age": 15.87839126586914
+    }
+   },
+   "rf": {
+    "val_auroc": 0.7305845663708872,
+    "test_auroc": 0.7613175300133392,
+    "test_auprc": 0.4191803830669706,
+    "by_time_to_death": {
+     "death_le_24h": {
+      "n_pos": 23,
+      "auroc": 0.7727320234113713
+     },
+     "death_24_72h": {
+      "n_pos": 41,
+      "auroc": 0.799718574108818
+     },
+     "death_gt_72h": {
+      "n_pos": 109,
+      "auroc": 0.7444645377558221
+     }
+    },
+    "best_params": {
+     "max_depth": 11,
+     "max_leaf_nodes": 84,
+     "n_estimators": 472
+    },
+    "top_features": {
+     "io_balance__last": 0.046833960376154574,
+     "io_balance__mean": 0.039644932859676296,
+     "io_balance__min": 0.03510202779614931,
+     "total_output__mean": 0.03173394693978672,
+     "Base Excess__last": 0.029963030313892212,
+     "Base Excess__mean": 0.024930052305162587,
+     "age": 0.023780863051708182,
+     "BT ℃__min": 0.021935197278625435,
+     "total_output__min": 0.020936842515487032,
+     "BT ℃__mean": 0.020459468682820444,
+     "total_input__last": 0.02010237046164934,
+     "FIO2___count": 0.018580590941666704,
+     "Mean ABP mmHg__last": 0.017917534739582606,
+     "SBP mmHg__last": 0.017756731279441697,
+     "Mean BP mmHg__last": 0.015841041539879322
+    }
+   }
+  }
+ }
+}
