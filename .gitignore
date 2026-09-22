@@ -1,0 +1,14 @@
+# data (PhysioNet credentialed — never commit) and derived artefacts
+data/
+models/
+results/**/*.csv
+results/**/*.parquet
+results/**/*.log
+results/**/*.pickle
+results/**/*.json
+!results/**/metrics.json
+!results/**/saturation.csv
+!results/**/shap_mean_abs.csv
+__pycache__/
+*.pyc
+.venv/
