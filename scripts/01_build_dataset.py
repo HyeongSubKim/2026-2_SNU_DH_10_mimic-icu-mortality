@@ -5,6 +5,9 @@ Event   : --event vent  (default) first mechanical-ventilation / intubation time
                         (MIMIC-code ventilation_classification items + PROCEDUREEVENTS_MV 224385)
           --event death  ADMISSIONS.DEATHTIME inside [INTIME, OUTTIME] (in-ICU death); stays of admissions that
                         end in death outside this ICU stay are excluded (ambiguous), survivors are negatives
+          --event none   no in-stay event: the full stay is kept and every row is a negative. Use this for
+                        stay-level outcomes defined outside the ICU stay (28-day / in-hospital mortality),
+                        which 05_early_window.py attaches with --outcome
 Labels  : identical to 2-1.add_event NICU section, with W = --pre-window hours (default 24)
             event stay & first_event_time-W < ICU intime           -> stay dropped
             rec_time <  first_event_time-W                         -> is_event=1, is_pre_event=1 (excluded in training)
@@ -13,7 +16,7 @@ Labels  : identical to 2-1.add_event NICU section, with W = --pre-window hours (
             no event                                               -> is_event=0, is_pre_event=1 (negative)
 Split   : MIMIC dates are shifted per patient, so the original calendar split is replaced by a
           patient-level random split 70/15/15 (seed 0).
-Output  : data/icu_<event>_w<W>h.csv  (columns mirror the original NICU csv where an adult analog exists)
+Output  : data/icu_<event>_w<W>h.csv (or data/icu_allstays.csv for --event none)  (columns mirror the original NICU csv where an adult analog exists)
 """
 import argparse
 import os
@@ -28,7 +31,7 @@ DATA = ROOT / 'data'
 SEED = 0
 RAW = Path(os.environ.get('MIMIC3_RAW', 'data/mimic-iii-clinical-database-1.4'))   # folder with the PhysioNet csv.gz files
 ap = argparse.ArgumentParser()
-ap.add_argument('--event', choices=['vent', 'death'], default='death')
+ap.add_argument('--event', choices=['vent', 'death', 'none'], default='death')
 ap.add_argument('--pre-window', type=int, default=24, help='label window in hours before the event (positive rows)')
 args = ap.parse_args()
 EVENT, PRE_WINDOW_H = args.event, args.pre_window
@@ -97,12 +100,14 @@ if EVENT == 'vent':   # first mech vent / intubation
     first_intub = proc.groupby('ICUSTAY_ID').STARTTIME.min()
     first_event = pd.concat([first_vent, first_intub], axis=1).min(axis=1).rename('first_event_time')
     st = st.merge(first_event, left_on='ICUSTAY_ID', right_index=True, how='left')
-else:                 # in-ICU death
+elif EVENT == 'death':   # in-ICU death
     death = pd.read_csv(RAW / 'ADMISSIONS.csv.gz', usecols=['HADM_ID', 'DEATHTIME'], parse_dates=['DEATHTIME'])
     st = st.merge(death, on='HADM_ID', how='left').rename(columns={'DEATHTIME': 'first_event_time'})
     outside = st.first_event_time.notna() & ((st.first_event_time < st.INTIME) | (st.first_event_time > st.OUTTIME))
     st = st[~outside]
     log(f'stays of admissions that end in death outside this ICU stay (excluded): {outside.sum()}')
+else:                    # no in-stay event; the outcome is attached later, at stay level
+    st['first_event_time'] = pd.NaT
 # original: only events inside the admission window are events
 st.loc[(st.first_event_time < st.INTIME) | (st.first_event_time > st.OUTTIME), 'first_event_time'] = pd.NaT
 log(f'stays with event: {st.first_event_time.notna().sum()} / {len(st)}')
@@ -220,7 +225,7 @@ df['dataset'] = df.SUBJECT_ID.map(split)
 df = df.rename(columns={'ICUSTAY_ID': 'pid', 'SUBJECT_ID': 'subject_id', 'HADM_ID': 'hadm_id'})
 df['rec_time_datetime'] = df.rec_time
 df = df.sort_values(['pid', 'rec_time']).reset_index(drop=True)
-out_path = DATA / f'icu_{EVENT}_w{PRE_WINDOW_H}h.csv'
+out_path = DATA / ('icu_allstays.csv' if EVENT == 'none' else f'icu_{EVENT}_w{PRE_WINDOW_H}h.csv')
 df.to_csv(out_path, index=False)
 
 log(f'saved {out_path}  shape={df.shape}')

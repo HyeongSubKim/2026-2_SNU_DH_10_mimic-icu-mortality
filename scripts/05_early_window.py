@@ -1,15 +1,27 @@
-"""Early-warning experiment: observe only the first W hours after ICU admission (W = 6, 12), predict the stay outcome.
+"""Early-warning experiment: observe only the first W hours of the ICU stay, predict a stay-level outcome.
 
 Per stay, the hourly rows with hours_since_intime < W are aggregated (last / mean / min / max / n_obs per feature,
-+ age, sex); the label is the stay-level event (in-ICU death for --event death). Stays that end (event or discharge)
-within the first W hours are excluded because their outcome is already known inside the observation window.
++ age, sex). Outcomes (--outcome):
+  stay_event  the event of the dataset itself, i.e. in-ICU death for a csv built with `01 --event death` (default)
+  icu_death   in-ICU death recomputed from ADMISSIONS.DEATHTIME, so that it can be run on the same --event none
+              csv as the two endpoints below and the three labels are compared on an identical cohort
+  death_28d   death from any cause within 28 days of ICU admission (PATIENTS.DOD, which also covers deaths after
+              hospital discharge) - the endpoint conventional severity scores are calibrated against, and the
+              one with the most positives
+  hosp_death  ADMISSIONS.HOSPITAL_EXPIRE_FLAG of the stay's admission
+A stay is excluded when its outcome is already known inside the observation window: for stay_event that is any
+stay ending (event or discharge) within W hours; for death_28d / hosp_death only stays that die within W hours -
+a patient discharged from the ICU before W is still at risk, so the stay is kept with the rows it has.
+Use a csv built with `01 --event none` for death_28d / hosp_death, so that no stay is dropped and no stay is
+truncated at an in-ICU event.
 Models: XGBoost (GPU, native NaN) and RandomForest (train-median fill), optuna on val AUROC, same patient split.
 
-Usage: python 05_early_window.py [--event death] [--dataset data/icu_death_w24h.csv] [--windows 1 3 6 12 24] [--n-trials 50] [--device cuda:0]
-Output: results/early_window_<event>/metrics.json, summary.md
+Usage: python 05_early_window.py --dataset data/icu_allstays.csv --outcome death_28d --windows 1 3 6 12 24
+Output: results/early_window_<outcome>/metrics.json, summary.md
 """
 import argparse
 import json
+import os
 import pickle
 import sys
 from pathlib import Path
@@ -26,18 +38,48 @@ from importlib import import_module
 rf_mod = import_module('02_train_rf')
 
 ROOT = Path(__file__).resolve().parents[1]
+RAW = Path(os.environ.get('MIMIC3_RAW', 'data/mimic-iii-clinical-database-1.4'))
 STATIC = ['age', 'sex']
+DAY = pd.Timedelta(1, 'D')
+HOUR = pd.Timedelta(1, 'h')
 
 
-def build(df, W):
-    stay = df.groupby('pid').agg(subject_id=('subject_id', 'first'), dataset=('dataset', 'first'), adm=('adm', 'first'),
+def attach_outcome(stay, outcome):
+    # Returns (y, t_death, known_at). t_death drives the time-to-event stratification; known_at is when the label
+    # would already be visible during the stay, and is used to exclude stays whose outcome falls inside the window.
+    if outcome == 'stay_event':
+        return stay.ev.notna().astype(int), stay.ev, stay.ev.fillna(stay.dis)
+
+    if outcome == 'icu_death':
+        dt = pd.read_csv(RAW / 'ADMISSIONS.csv.gz', usecols=['HADM_ID', 'DEATHTIME'], parse_dates=['DEATHTIME']).set_index('HADM_ID').DEATHTIME
+        t_death = stay.hadm_id.map(dt)
+        y = ((t_death >= stay.adm) & (t_death <= stay.dis)).astype(int)
+        t_death = t_death.where(y == 1)
+        return y, t_death, t_death.fillna(stay.dis)   # leaving the ICU alive also reveals the label
+
+    dod = pd.read_csv(RAW / 'PATIENTS.csv.gz', usecols=['SUBJECT_ID', 'DOD'], parse_dates=['DOD']).set_index('SUBJECT_ID').DOD
+    t_death = stay.subject_id.map(dod)
+    if outcome == 'death_28d':
+        # an out-of-hospital DOD is a date at 00:00, so compare on day boundaries: death on day 28 still counts
+        y = ((t_death >= stay.adm.dt.floor('D')) & (t_death <= stay.adm.dt.floor('D') + 28 * DAY)).astype(int)
+    else:   # hosp_death
+        flag = pd.read_csv(RAW / 'ADMISSIONS.csv.gz', usecols=['HADM_ID', 'HOSPITAL_EXPIRE_FLAG']).set_index('HADM_ID').HOSPITAL_EXPIRE_FLAG
+        y = stay.hadm_id.map(flag).fillna(0).astype(int)
+    t_death = t_death.where(y == 1)
+    return y, t_death, t_death          # only a death inside the window reveals the label
+
+
+def build(df, W, outcome='stay_event'):
+    stay = df.groupby('pid').agg(subject_id=('subject_id', 'first'), hadm_id=('hadm_id', 'first'),
+                                 dataset=('dataset', 'first'), adm=('adm', 'first'),
                                  dis=('dis_date', 'first'), ev=('first_event_time', 'first'),
                                  age=('age', 'first'), sex=('sex', 'first'))
-    stay['y'] = stay.ev.notna().astype(int)
-    end = stay.ev.fillna(stay.dis)
-    stay['hours_to_end'] = (end - stay.adm) / pd.Timedelta(1, 'h')
-    keep = stay.hours_to_end > W
-    n_excl = {'event_within_W': int((~keep & (stay.y == 1)).sum()), 'discharged_within_W': int((~keep & (stay.y == 0)).sum())}
+    stay['y'], t_death, known_at = attach_outcome(stay, outcome)
+    # hours_to_end: death for positives, ICU discharge for negatives (time-to-event stratification, saturation plot)
+    stay['hours_to_end'] = ((t_death - stay.adm) / HOUR).fillna((stay.dis - stay.adm) / HOUR)
+    keep = known_at.isna() | ((known_at - stay.adm) / HOUR > W)
+    n_excl = {'outcome_known_within_W_pos': int((~keep & (stay.y == 1)).sum()),
+              'outcome_known_within_W_neg': int((~keep & (stay.y == 0)).sum())}
     stay = stay[keep]
 
     feats = [c for c in sorted(set(df.columns) - set(rf_mod.INFO_CAND_COLS)) if c not in STATIC and c != 'hrs']
@@ -107,6 +149,7 @@ def fit_rf(Xtr, ytr, Xva, yva, n_trials, seed, n_jobs):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--event', default='death')
+    ap.add_argument('--outcome', choices=['stay_event', 'icu_death', 'death_28d', 'hosp_death'], default='stay_event')
     ap.add_argument('--dataset', default=None, help='csv from 01_build_dataset.py (default data/icu_<event>_w24h.csv)')
     ap.add_argument('--windows', type=int, nargs='+', default=[6, 12])
     ap.add_argument('--n-trials', type=int, default=50)
@@ -114,9 +157,11 @@ def main():
     ap.add_argument('--n-jobs', type=int, default=8)
     ap.add_argument('--seed', type=int, default=25)
     args = ap.parse_args()
-    out_dir = ROOT / 'results' / f'early_window_{args.event}'
+    tag = args.event if args.outcome == 'stay_event' else args.outcome
+    outcome_name = args.outcome
+    out_dir = ROOT / 'results' / f'early_window_{tag}'
     out_dir.mkdir(parents=True, exist_ok=True)
-    model_dir = ROOT / 'models' / f'early_window_{args.event}'
+    model_dir = ROOT / 'models' / f'early_window_{tag}'
     model_dir.mkdir(parents=True, exist_ok=True)
 
     df = pd.read_csv(args.dataset or ROOT / 'data' / f'icu_{args.event}_w24h.csv')
@@ -127,8 +172,9 @@ def main():
     results = json.load(open(out_dir / 'metrics.json')) if (out_dir / 'metrics.json').exists() else {}
     results = {int(k): v for k, v in results.items()}
     md = []
+    print(f'outcome={args.outcome} dataset={args.dataset}', flush=True)
     for W in args.windows:
-        stay, X, n_excl = build(df, W)
+        stay, X, n_excl = build(df, W, args.outcome)
         parts = {k: stay.dataset == k for k in ['train', 'val', 'test']}
         te = stay[parts['test']]
         h_after = te.hours_to_end.to_numpy() - W
@@ -137,6 +183,9 @@ def main():
                'event_rate': {k: float(stay.y[v].mean()) for k, v in parts.items()},
                'n_features': X.shape[1], 'models': {}}
         print(f'W={W}h: stays {res["n_stays"]} event_rate {res["event_rate"]} excluded {n_excl}', flush=True)
+        if min(stay.y[v].sum() for v in parts.values()) == 0:
+            raise SystemExit(f'no positive stays in one of the splits for outcome={outcome_name} at W={W}h '
+                             '(is the dataset built with the matching --event?)')
         te_out = X[parts['test']].copy()
         for name, fn in [('xgb', lambda: fit_xgb(X[parts['train']], stay.y[parts['train']].to_numpy(), X[parts['val']], stay.y[parts['val']].to_numpy(),
                                                 args.n_trials, args.device, args.seed)),
@@ -161,8 +210,9 @@ def main():
 
         md.append(f'\n## W = {W} h\n')
         md.append(f'- stays train/val/test = {res["n_stays"]["train"]:,}/{res["n_stays"]["val"]:,}/{res["n_stays"]["test"]:,}; '
-                  f'event rate {res["event_rate"]["test"]:.3f} (test); excluded: {n_excl["event_within_W"]} events and '
-                  f'{n_excl["discharged_within_W"]} discharges inside the window; {res["n_features"]} features\n')
+                  f'event rate {res["event_rate"]["test"]:.3f} (test); excluded because the outcome is known inside '
+                  f'the window: {n_excl["outcome_known_within_W_pos"]} positive / {n_excl["outcome_known_within_W_neg"]} '
+                  f'negative; {res["n_features"]} features\n')
         md.append('| model | val AUROC | test AUROC | test AUPRC | death ≤24h after window | 24–72h | >72h |\n|---|---|---|---|---|---|---|\n')
         for name, r in res['models'].items():
             s = r['by_time_to_death']
@@ -173,7 +223,7 @@ def main():
         md.append('top features (rf importance): ' + ', '.join(f'{k} {v:.3f}' for k, v in list(res['models']['rf']['top_features'].items())[:10]) + '\n')
 
     json.dump(dict(sorted(results.items())), open(out_dir / 'metrics.json', 'w'), indent=1, ensure_ascii=False)
-    head = f'# Early-window prediction of {args.event} (observe first W hours, predict the stay outcome)\n'
+    head = f'# Early-window prediction of {tag} (observe the first W hours of the ICU stay)\n'
     old = (out_dir / 'summary.md').read_text() if (out_dir / 'summary.md').exists() else head
     (out_dir / 'summary.md').write_text(old + ''.join(md) + saturation(results, out_dir))
     print('saved', out_dir)

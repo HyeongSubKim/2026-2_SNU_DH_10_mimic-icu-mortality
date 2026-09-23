@@ -70,6 +70,39 @@ Discrimination saturates at **W = 12–24 h**; the decline afterwards is the coh
 `results/early_window_death/summary.md` also reports AUROC by time-to-death after the window and on the common
 cohort of stays longer than 168 h (`saturation.png`); curves and SHAP per window are in `results/shap_early_death/`.
 
+### Endpoint comparison: in-ICU vs in-hospital vs 28-day mortality
+
+A stay-level endpoint defined outside the ICU (28-day all-cause death from `PATIENTS.DOD`, which also covers deaths
+after hospital discharge) yields far more positives and is what conventional severity scores are calibrated against.
+Built with `01 --event none` (no stay is truncated or dropped by an in-ICU event) and run through the same
+early-window models, identical features and patient split — XGBoost test AUROC / AUPRC:
+
+| W (h) | in-ICU death | in-hospital death | 28-day death |
+|---|---|---|---|
+| 1 | 0.763 / 0.275 | 0.750 / 0.290 | 0.740 / 0.313 |
+| 6 | 0.833 / 0.380 | 0.804 / 0.344 | 0.795 / 0.374 |
+| 12 | 0.853 / 0.415 | 0.819 / 0.381 | 0.809 / 0.398 |
+| **24** | **0.871 / 0.437** | **0.847 / 0.420** | **0.826 / 0.426** |
+| 48 | 0.856 / 0.439 | 0.863 / 0.413 | 0.836 / 0.417 |
+
+Positives (whole cohort): in-ICU 4,453 (8.3 %) → in-hospital 6,544 (12.2 %) → 28-day 7,776 (14.6 %); 3,454 of the
+28-day deaths happen outside the ICU (1,828 on the ward, 1,626 after hospital discharge).
+
+- **More positives, lower AUROC.** Ranking is consistent across every window: the further the endpoint is from the
+  ICU stay, the lower the discrimination (−0.045 AUROC at W = 24 h from in-ICU to 28-day). The extra positives are
+  late deaths (median 7.6 days after admission) whose course is shaped by treatment after the observation window —
+  at W = 24 h the 28-day model scores 0.907 on deaths within the next 24 h but 0.806 on deaths later than 72 h.
+- **AUPRC barely moves** (0.437 → 0.426 at W = 24 h) because the higher prevalence offsets the weaker ranking, so the
+  28-day endpoint is not worse in absolute precision-recall terms.
+- The 28-day model relies more on baseline severity (age, FiO2 range, RR) and less on the acute end-of-stay features
+  that dominate the in-ICU model (minimum base excess, O2 flow).
+- MIMIC-III records post-discharge deaths through a social-security death index, available for 45 % of stays; deaths
+  that the index misses are counted as survivors, which biases the 28-day label towards the null.
+
+Reference points from the literature for first-24 h severity scores on MIMIC-III (in-hospital mortality):
+SAPS-II ≈ 0.78–0.86, OASIS ≈ 0.77, APS-III ≈ 0.78 — the 0.847 obtained here with 20 routinely charted variables is
+in the same range, though cohort definitions differ and this is not a head-to-head comparison.
+
 ## Pipeline
 
 ```
@@ -83,6 +116,12 @@ python scripts/06_shap_curves.py --task hourly --prefix icu_death_w24h --device 
 python scripts/03_eda.py --event death --dataset data/icu_death_w24h.csv   # results/eda_icu_death_w24h/EDA.md
 python scripts/05_early_window.py --dataset data/icu_death_w24h.csv --windows 1 3 6 12 24 48 72 120 168
 python scripts/06_shap_curves.py --task early --event death
+
+# endpoint comparison (in-ICU vs in-hospital vs 28-day mortality) on one cohort
+python scripts/01_build_dataset.py --event none                      # -> data/icu_allstays.csv, no event truncation
+for O in icu_death hosp_death death_28d; do
+  python scripts/05_early_window.py --dataset data/icu_allstays.csv --outcome $O --windows 1 3 6 12 24 48
+done
 ```
 
 | script | what it does |
@@ -93,7 +132,7 @@ python scripts/06_shap_curves.py --task early --event death
 | `04_train_xgb.py` | same preparation and evaluation; GPU `hist`, early stopping on val, Optuna over depth / lr / min_child_weight / subsample / colsample / λ / scale_pos_weight; `--native-nan` skips the median fill |
 | `06_shap_curves.py` | ROC / PR curves for all models of a task, exact TreeSHAP (XGBoost `pred_contribs`, RF via `shap.TreeExplainer` on a sample) |
 | `03_eda.py` | raw MIMIC-III overview + cohort / missingness / label-time-structure report (`EDA.md` + figures) |
-| `05_early_window.py` | stay-level early-warning experiment described above (XGB + RF, per-window models, saturation analysis) |
+| `05_early_window.py` | stay-level early-warning experiment described above (XGB + RF, per-window models, saturation analysis). `--outcome {stay_event,icu_death,hosp_death,death_28d}` selects the endpoint |
 
 ### Fixes relative to the original notebook (all in `02_train_rf.py` / `01_build_dataset.py`)
 
