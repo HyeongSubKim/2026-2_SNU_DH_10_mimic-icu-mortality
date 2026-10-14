@@ -1,5 +1,5 @@
 """Cohort funnel for the flow chart: all ICU stays -> adults (>= 18 y) -> SOFA computable within W h -> lactate within
-W h -> base excess within W h, for W = 6 and 24.  Writes results/flowchart/flow_counts.json (drawn by 08_flowchart.py).
+W h -> base excess within W h -> not died within the first W h, for W = 6 and 24.  Writes results/flowchart/flow_counts.json (drawn by 08_flowchart.py).
 
 SOFA "computable" = all six organ systems have at least one measurement in the window: PaO2 & FiO2, platelets,
 bilirubin, MAP or a vasopressor, GCS, creatinine or urine output. Labs are counted from 6 h before ICU admission.
@@ -22,7 +22,7 @@ H = pd.Timedelta(1, 'h')
 
 icu = pd.read_csv(RAW / 'ICUSTAYS.csv.gz', parse_dates=['INTIME', 'OUTTIME'])
 pat = pd.read_csv(RAW / 'PATIENTS.csv.gz', usecols=['SUBJECT_ID', 'DOB', 'DOD'], parse_dates=['DOB', 'DOD'])
-adm = pd.read_csv(RAW / 'ADMISSIONS.csv.gz', usecols=['HADM_ID', 'HOSPITAL_EXPIRE_FLAG'])
+adm = pd.read_csv(RAW / 'ADMISSIONS.csv.gz', usecols=['HADM_ID', 'HOSPITAL_EXPIRE_FLAG', 'DEATHTIME'], parse_dates=['DEATHTIME'])
 icu = icu.merge(pat, on='SUBJECT_ID').merge(adm, on='HADM_ID')
 icu['age'] = (icu.INTIME.dt.year - icu.DOB.dt.year) - ((icu.INTIME.dt.month * 100 + icu.INTIME.dt.day) < (icu.DOB.dt.month * 100 + icu.DOB.dt.day))
 F = {'all': {'stays': len(icu), 'patients': icu.SUBJECT_ID.nunique()}}
@@ -90,6 +90,9 @@ for W in [6, 24]:
     lact = stays_in(bg[bg.ITEMID == 50813], 'CHARTTIME', W, True)
     be = stays_in(bg[bg.ITEMID == 50802], 'CHARTTIME', W, True)
     s3 = sofa & lact; s4 = s3 & be
+    # outcome already observed inside the window: in-hospital death (exact DEATHTIME) within the first W h
+    died_in_window = set(st.ICUSTAY_ID[(st.DEATHTIME >= st.INTIME) & (st.DEATHTIME <= st.INTIME + W * H)])
+    s5 = s4 - died_in_window
     died = set(st.ICUSTAY_ID[st.HOSPITAL_EXPIRE_FLAG == 1])
     # 28-day all-cause mortality from ICU admission (PATIENTS.DOD; an out-of-hospital DOD is a date, so compare on days)
     d0 = st.INTIME.dt.floor('D')
@@ -98,7 +101,9 @@ for W in [6, 24]:
     F[f'W{W}'] = {'sofa': {'stays': len(sofa), 'patients': pts(sofa)}, 'excl_sofa': len(no_sofa), 'excl_sofa_missing_organ': missing,
                   'lactate': {'stays': len(s3), 'patients': pts(s3)}, 'excl_lactate': len(sofa - lact),
                   'be': {'stays': len(s4), 'patients': pts(s4)}, 'excl_be': len(s3 - be),
-                  'final_died': len(s4 & died), 'final_alive': len(s4 - died),
-                  'final_died_28d': len(s4 & died28), 'final_alive_28d': len(s4 - died28)}
+                  'excl_died_in_window': len(s4 & died_in_window),
+                  'final': {'stays': len(s5), 'patients': pts(s5)},
+                  'final_died': len(s5 & died), 'final_alive': len(s5 - died),
+                  'final_died_28d': len(s5 & died28), 'final_alive_28d': len(s5 - died28)}
 json.dump(F, open(OUT / 'flow_counts.json', 'w'), indent=1)
 print(json.dumps(F, indent=1))

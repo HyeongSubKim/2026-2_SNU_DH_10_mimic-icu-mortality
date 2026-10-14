@@ -1,6 +1,7 @@
 """Draw the cohort flow chart (CONSORT style) from the counts in results/flowchart/flow_counts.json.
 
-Steps: all ICU stays -> adults (>= 18 y) -> SOFA computable within W h -> lactate within W h -> base excess within W h,
+Steps: all ICU stays -> adults (>= 18 y) -> SOFA computable within W h -> lactate within W h -> base excess within W h
+-> not died within the first W h,
 for W = 6 and W = 24 (one figure each, plus a side-by-side figure). Coordinates are in inches.
 """
 import json
@@ -17,9 +18,9 @@ F = json.load(open(OUT / 'flow_counts.json'))
 plt.rcParams['font.family'] = 'DejaVu Sans'
 
 FS, LH, PAD = 9.0, 0.21, 0.09          # font size (pt), line height / padding (inches)
-WIDTH, HEIGHT = 10.0, 8.6
+WIDTH, HEIGHT = 10.0, 10.0
 LX, LW, RX, RW = 0.3, 4.3, 5.2, 4.5    # main column / exclusion column (x, width)
-GAP = 0.85                             # vertical space between main boxes (holds the arrow)
+GAP = 0.8                             # vertical space between main boxes (holds the arrow)
 
 
 def box(ax, x, y_top, w, lines, fs=FS):
@@ -43,8 +44,8 @@ def draw(ax, W, title=None):
         [f"{F['adult']['stays']:,} adult ICU stays", f"({F['adult']['patients']:,} patients)"],
         [f"{d['sofa']['stays']:,} stays with SOFA computable in the first {W} h", f"({d['sofa']['patients']:,} patients)"],
         [f"{d['lactate']['stays']:,} stays with lactate in the first {W} h", f"({d['lactate']['patients']:,} patients)"],
-        [f"{d['be']['stays']:,} stays with base excess in the first {W} h  -  included",
-         f"({d['be']['patients']:,} patients)",
+        [f"{d['be']['stays']:,} stays with base excess in the first {W} h", f"({d['be']['patients']:,} patients)"],
+        [f"{d['final']['stays']:,} stays included  ({d['final']['patients']:,} patients)",
          f"{d['final_died_28d']:,} died within 28 days of ICU admission",
          f"{d['final_alive_28d']:,} alive at 28 days"],
     ]
@@ -62,6 +63,8 @@ def draw(ax, W, title=None):
         [f"{d['excl_lactate']:,} excluded", f"no lactate measured in the first {W} h"],
         [f"{d['excl_be']:,} excluded", f"no base excess measured in the first {W} h",
          "(base excess is reported with every PaO2, already required for SOFA)"],
+        [f"{d['excl_died_in_window']:,} excluded", f"died within the first {W} h of ICU admission",
+         "(outcome already observed inside the observation window)"],
     ]
     y = HEIGHT - 0.35
     for i, lines in enumerate(main):

@@ -165,6 +165,6 @@ RandomForest tuning is CPU-bound (16 cores, ~5 min per trial on 3.5 M rows). Pea
 
 `07_cohort_flow_counts.py` + `08_flowchart.py` produce CONSORT-style flow charts (`results/flowchart/`) for a cohort
 defined by: adults (>= 18 y at ICU admission) -> SOFA computable in the first W h (all six organ systems measured) ->
-lactate in the first W h -> base excess in the first W h, with the final box split by 28-day all-cause mortality.
-W = 24 h: 61,532 ICU stays -> 53,329 adult -> 11,140 SOFA -> 9,731 lactate -> 9,731 base excess
-(2,728 died within 28 days, 28.0 %). W = 6 h: 5,904 included (1,678 died, 28.4 %).
+lactate in the first W h -> base excess in the first W h -> not died within the first W h, with the final box split by
+28-day all-cause mortality. W = 24 h: 61,532 ICU stays -> 53,329 adult -> 11,140 SOFA -> 9,731 lactate -> 9,731 base
+excess -> 9,299 included (2,296 died within 28 days, 24.7 %). W = 6 h: 5,858 included (1,632 died, 27.9 %).
