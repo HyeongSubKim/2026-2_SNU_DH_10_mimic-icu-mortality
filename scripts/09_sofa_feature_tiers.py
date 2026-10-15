@@ -11,6 +11,7 @@ Cohort per window W: adults, SOFA computable in W h, lactate in W h, base excess
 Outcome: death from any cause within 28 days of ICU admission (PATIENTS.DOD). Patient-level 70/15/15 split (seed 0).
 Model: XGBoost (GPU, native NaN), Optuna on validation AUROC, early stopping; test AUROC / AUPRC with bootstrap 95 % CI.
 Reference rows: SOFA total score alone, and age + SOFA total (logistic regression).
+--demographics adds age and sex to every tier (results go to results/sofa_tiers_demo/).
 
 Usage: MIMIC3_RAW=... python scripts/09_sofa_feature_tiers.py [--windows 6 24] [--n-trials 50] [--device cuda:0]
 Output: results/sofa_tiers/{metrics.json, summary.md, features_W{W}.parquet, roc_W{W}.png}
@@ -33,8 +34,6 @@ from sklearn.metrics import average_precision_score, roc_auc_score, roc_curve
 RAW = Path(os.environ.get('MIMIC3_RAW', 'data/mimic-iii-clinical-database-1.4'))
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / 'data'
-OUT = ROOT / 'results' / 'sofa_tiers'
-OUT.mkdir(parents=True, exist_ok=True)
 H = pd.Timedelta(1, 'h')
 SEED = 0
 
@@ -226,16 +225,21 @@ def main():
     ap.add_argument('--windows', type=int, nargs='+', default=[6, 24])
     ap.add_argument('--n-trials', type=int, default=50)
     ap.add_argument('--device', default='cuda:0')
+    ap.add_argument('--demographics', action='store_true', help='add age and sex to every feature set')
     args = ap.parse_args()
+    OUT = ROOT / 'results' / ('sofa_tiers_demo' if args.demographics else 'sofa_tiers')
+    OUT.mkdir(parents=True, exist_ok=True)
 
     st = load_cohort_tables()
     ev = load_events(st)
-    results, md = {}, ['# 28-day mortality from the first W hours: SOFA inputs ± lactate ± base excess (XGBoost)\n']
+    results, md = {}, [f'# 28-day mortality from the first W hours: SOFA inputs ± lactate ± base excess (XGBoost{", + age/sex in every tier" if args.demographics else ""})\n']
     for W in args.windows:
         X = build_features(st, ev, W)
         keep = cohort_mask(X, st, W)
         Xc, sc = X[keep], st[keep]
-        Xc.join(sc[['SUBJECT_ID', 'dataset', 'y28', 'age', 'sex']]).to_parquet(OUT / f'features_W{W}.parquet')
+        if args.demographics:
+            Xc = Xc.join(sc[['age', 'sex']])
+        Xc.join(sc[[c for c in ['SUBJECT_ID', 'dataset', 'y28', 'age', 'sex'] if c not in Xc.columns]]).to_parquet(OUT / f'features_W{W}.parquet')
         y = sc.y28.to_numpy(); part = {k: (sc.dataset == k).to_numpy() for k in ['train', 'val', 'test']}
         res = {'window_h': W, 'n': {k: int(v.sum()) for k, v in part.items()}, 'event_rate_test': float(y[part['test']].mean()),
                'n_features_total': int(Xc.shape[1]), 'tiers': {}}

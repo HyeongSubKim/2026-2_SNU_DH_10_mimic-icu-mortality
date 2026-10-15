@@ -21,7 +21,6 @@ from sklearn.metrics import average_precision_score, roc_auc_score
 from tabpfn import TabPFNClassifier
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / 'results' / 'sofa_tiers'
 META = ['SUBJECT_ID', 'dataset', 'y28', 'age', 'sex']
 TIERS = {
     '1 SOFA inputs': lambda cols: [c for c in cols if not c.startswith(('lactate_', 'base_excess_'))],
@@ -46,7 +45,9 @@ def main():
     ap.add_argument('--windows', type=int, nargs='+', default=[6, 24])
     ap.add_argument('--device', default='cuda')
     ap.add_argument('--n-estimators', type=int, default=8, help='TabPFN ensemble members (default of the library)')
+    ap.add_argument('--demographics', action='store_true', help='use results/sofa_tiers_demo and keep age/sex as features')
     args = ap.parse_args()
+    OUT = ROOT / 'results' / ('sofa_tiers_demo' if args.demographics else 'sofa_tiers')
     hf = Path(os.environ.get('HF_HOME', Path.home() / '.cache/huggingface'))
     ckpts = sorted(glob.glob(str(hf / 'hub/models--Prior-Labs--TabPFN-v2-clf/snapshots/*/tabpfn-v2-classifier.ckpt')))
     model_path = ckpts[0] if ckpts else None          # None -> library default (needs a Prior Labs token for v2.5+)
@@ -55,7 +56,7 @@ def main():
     results, md = {}, ['\n## Transformer baseline: TabPFN v2 (same cohorts, splits and feature sets; train = train + val, no tuning)\n\n']
     for W in args.windows:
         df = pd.read_parquet(OUT / f'features_W{W}.parquet')
-        feats = [c for c in df.columns if c not in META]
+        feats = [c for c in df.columns if c not in META or (args.demographics and c in ('age', 'sex'))]
         tr = df.dataset.isin(['train', 'val']).to_numpy(); te = (df.dataset == 'test').to_numpy()
         y = df.y28.to_numpy(); yt = y[te]
         results[W] = {'n_train': int(tr.sum()), 'n_test': int(te.sum()), 'tiers': {}}

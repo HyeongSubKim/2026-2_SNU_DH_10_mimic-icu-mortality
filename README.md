@@ -186,3 +186,7 @@ Cohorts: 5,757 stays (6 h; test 853, 29 % died) and 9,229 (24 h; test 1,374, 26 
 ~0.01 AUROC on top of the SOFA inputs (CIs overlap); the 24 h window is ~0.02 above 6 h; TabPFN v2 (pre-trained
 tabular transformer, no tuning, ~20–50 s per fit) matches XGBoost at 24 h and is slightly better at 6 h — see
 `results/sofa_tiers/transformer_feasibility.md` for the other transformer options and why they were not pursued.
+
+With age and sex added to every tier (`--demographics`, `results/sofa_tiers_demo/`): XGBoost 6 h 0.814 / 0.812 / 0.823 /
+0.823 and 24 h 0.826 / 0.831 / 0.831 / **0.837**; TabPFN v2 6 h 0.824 / 0.830 / 0.833 / 0.832 and 24 h 0.831 / 0.833 /
+0.835 / **0.837** (tiers 1–4). Demographics add ~+0.01–0.02 AUROC; the ordering of the tiers is unchanged.
