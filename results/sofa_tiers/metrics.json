@@ -1,0 +1,342 @@
+{
+ "6": {
+  "window_h": 6,
+  "n": {
+   "train": 4072,
+   "val": 832,
+   "test": 853
+  },
+  "event_rate_test": 0.2895662368112544,
+  "n_features_total": 66,
+  "tiers": {
+   "1 SOFA inputs": {
+    "n_features": 56,
+    "val_auroc": 0.74239403337764,
+    "test_auroc": 0.7936558838070041,
+    "test_auroc_ci95": [
+     0.7612065115267863,
+     0.8258897265197046
+    ],
+    "test_auprc": 0.6106986175038,
+    "test_auprc_ci95": [
+     0.5511455818341591,
+     0.6761962909313786
+    ],
+    "best_params": {
+     "max_depth": 3,
+     "learning_rate": 0.16568304524385408,
+     "min_child_weight": 2.767358373044394,
+     "subsample": 0.7728819792469163,
+     "colsample_bytree": 0.850169891407772,
+     "reg_lambda": 0.05407348640824416
+    },
+    "best_iteration": 82,
+    "top_features_gain": {
+     "vaso_norepinephrine": 40.557472229003906,
+     "vaso_drugs": 19.008745193481445,
+     "sofa_total": 18.943510055541992,
+     "sofa_cardio": 15.655110359191895,
+     "fio2_last": 15.233119010925293,
+     "urine_total": 14.002154350280762,
+     "gcs_last": 13.250612258911133,
+     "map_min": 11.293587684631348,
+     "creatinine_mean": 10.161252975463867,
+     "bilirubin_mean": 8.57894229888916,
+     "gcs_count": 8.44469165802002,
+     "bilirubin_min": 8.273805618286133
+    }
+   },
+   "2 + lactate": {
+    "n_features": 61,
+    "val_auroc": 0.7452370403190075,
+    "test_auroc": 0.8012853916970645,
+    "test_auroc_ci95": [
+     0.7686527639215998,
+     0.831438555679792
+    ],
+    "test_auprc": 0.6189947782104257,
+    "test_auprc_ci95": [
+     0.5525372132198443,
+     0.6871054694765231
+    ],
+    "best_params": {
+     "max_depth": 6,
+     "learning_rate": 0.07141728881943513,
+     "min_child_weight": 43.30791394721045,
+     "subsample": 0.7932348530636462,
+     "colsample_bytree": 0.6648671748154875,
+     "reg_lambda": 0.27714259998858265
+    },
+    "best_iteration": 133,
+    "top_features_gain": {
+     "vaso_norepinephrine": 56.18721389770508,
+     "lactate_min": 21.7089900970459,
+     "sofa_total": 19.506465911865234,
+     "sofa_cardio": 16.282901763916016,
+     "vaso_drugs": 13.64287281036377,
+     "urine_total": 12.781754493713379,
+     "lactate_last": 11.305338859558105,
+     "lactate_mean": 11.091687202453613,
+     "gcs_last": 10.523550033569336,
+     "fio2_last": 9.430715560913086,
+     "urine_ml_per_h": 9.258872032165527,
+     "urine_n": 9.141486167907715
+    }
+   },
+   "3 + base excess": {
+    "n_features": 61,
+    "val_auroc": 0.7547851129818343,
+    "test_auroc": 0.800590585374327,
+    "test_auroc_ci95": [
+     0.7694561900492434,
+     0.8305805590621695
+    ],
+    "test_auprc": 0.6274465017585016,
+    "test_auprc_ci95": [
+     0.5682775256474201,
+     0.6892328987623225
+    ],
+    "best_params": {
+     "max_depth": 5,
+     "learning_rate": 0.05229188474805773,
+     "min_child_weight": 4.135642122274515,
+     "subsample": 0.683867484685691,
+     "colsample_bytree": 0.6116117450256285,
+     "reg_lambda": 0.023798244363590647
+    },
+    "best_iteration": 174,
+    "top_features_gain": {
+     "vaso_norepinephrine": 16.33452033996582,
+     "sofa_total": 12.089173316955566,
+     "urine_total": 9.41358757019043,
+     "vaso_drugs": 9.383211135864258,
+     "gcs_last": 9.036779403686523,
+     "base_excess_mean": 8.743086814880371,
+     "sofa_cardio": 8.244769096374512,
+     "base_excess_last": 7.684415817260742,
+     "vaso_n": 7.420757293701172,
+     "fio2_last": 7.0349345207214355,
+     "map_min": 7.026173114776611,
+     "bilirubin_last": 6.947439193725586
+    }
+   },
+   "4 + lactate + base excess": {
+    "n_features": 66,
+    "val_auroc": 0.7481834293309704,
+    "test_auroc": 0.8093224302187304,
+    "test_auroc_ci95": [
+     0.7785463082445184,
+     0.8393137937538805
+    ],
+    "test_auprc": 0.629646752954083,
+    "test_auprc_ci95": [
+     0.5674339087427718,
+     0.6925912975695399
+    ],
+    "best_params": {
+     "max_depth": 6,
+     "learning_rate": 0.054980977005140055,
+     "min_child_weight": 12.699972922513304,
+     "subsample": 0.7885135432004389,
+     "colsample_bytree": 0.771540023626406,
+     "reg_lambda": 0.14405553476898555
+    },
+    "best_iteration": 107,
+    "top_features_gain": {
+     "vaso_norepinephrine": 26.049509048461914,
+     "sofa_cardio": 16.748342514038086,
+     "lactate_min": 16.24560546875,
+     "urine_total": 12.231759071350098,
+     "sofa_total": 12.173255920410156,
+     "vaso_drugs": 11.422157287597656,
+     "lactate_last": 10.25235366821289,
+     "gcs_last": 10.06039047241211,
+     "base_excess_last": 9.978291511535645,
+     "base_excess_mean": 9.926888465881348,
+     "lactate_mean": 9.017738342285156,
+     "fio2_last": 8.388973236083984
+    }
+   }
+  },
+  "reference": {
+   "sofa_total_alone": {
+    "test_auroc": 0.650308654347216,
+    "test_auprc": 0.44264859076033064
+   },
+   "age_plus_sofa_logistic": {
+    "test_auroc": 0.7083082802207346,
+    "test_auprc": 0.5113476141722695
+   }
+  }
+ },
+ "24": {
+  "window_h": 24,
+  "n": {
+   "train": 6505,
+   "val": 1350,
+   "test": 1374
+  },
+  "event_rate_test": 0.2576419213973799,
+  "n_features_total": 66,
+  "tiers": {
+   "1 SOFA inputs": {
+    "n_features": 56,
+    "val_auroc": 0.7845194953099228,
+    "test_auroc": 0.8137476459510358,
+    "test_auroc_ci95": [
+     0.7878845650749791,
+     0.8361074698066344
+    ],
+    "test_auprc": 0.6226613262496268,
+    "test_auprc_ci95": [
+     0.5707667057939225,
+     0.6701492863428201
+    ],
+    "best_params": {
+     "max_depth": 6,
+     "learning_rate": 0.03352384903775008,
+     "min_child_weight": 11.277775688276797,
+     "subsample": 0.9313343210477973,
+     "colsample_bytree": 0.8538210429191578,
+     "reg_lambda": 0.2574569351664149
+    },
+    "best_iteration": 129,
+    "top_features_gain": {
+     "gcs_last": 40.18307876586914,
+     "urine_total": 22.458131790161133,
+     "sofa_total": 18.01166343688965,
+     "sofa_liver": 16.414852142333984,
+     "fio2_last": 12.951258659362793,
+     "fio2_min": 12.100525856018066,
+     "bilirubin_last": 11.46474552154541,
+     "gcs_count": 10.95421314239502,
+     "urine_ml_per_h": 10.756099700927734,
+     "urine_n": 10.335250854492188,
+     "map_mean": 9.808220863342285,
+     "bilirubin_max": 9.444759368896484
+    }
+   },
+   "2 + lactate": {
+    "n_features": 61,
+    "val_auroc": 0.793190954696112,
+    "test_auroc": 0.823302315276393,
+    "test_auroc_ci95": [
+     0.7979451064451847,
+     0.8468590178217643
+    ],
+    "test_auprc": 0.6335581576584155,
+    "test_auprc_ci95": [
+     0.582085587172141,
+     0.6826235754384622
+    ],
+    "best_params": {
+     "max_depth": 8,
+     "learning_rate": 0.04032004224000684,
+     "min_child_weight": 6.443745945266719,
+     "subsample": 0.8165810318189997,
+     "colsample_bytree": 0.641154527873998,
+     "reg_lambda": 0.07084440906397109
+    },
+    "best_iteration": 145,
+    "top_features_gain": {
+     "gcs_last": 24.6608829498291,
+     "lactate_last": 14.231017112731934,
+     "urine_total": 11.579977035522461,
+     "sofa_total": 9.279195785522461,
+     "lactate_min": 8.373312950134277,
+     "urine_ml_per_h": 7.8037614822387695,
+     "fio2_min": 7.717723369598389,
+     "vaso_epinephrine": 7.0369462966918945,
+     "gcs_count": 6.999849319458008,
+     "urine_n": 6.996101379394531,
+     "fio2_last": 6.822679042816162,
+     "bilirubin_last": 6.720613479614258
+    }
+   },
+   "3 + base excess": {
+    "n_features": 61,
+    "val_auroc": 0.7845519900720764,
+    "test_auroc": 0.8213110667996012,
+    "test_auroc_ci95": [
+     0.7963033388997052,
+     0.843620589947225
+    ],
+    "test_auprc": 0.6371275525759064,
+    "test_auprc_ci95": [
+     0.586107337403539,
+     0.6842105661838019
+    ],
+    "best_params": {
+     "max_depth": 7,
+     "learning_rate": 0.02193776831861124,
+     "min_child_weight": 11.415532489611683,
+     "subsample": 0.6708491370458707,
+     "colsample_bytree": 0.7306409822848373,
+     "reg_lambda": 0.8518173227319821
+    },
+    "best_iteration": 200,
+    "top_features_gain": {
+     "gcs_last": 29.912425994873047,
+     "urine_total": 16.522048950195312,
+     "base_excess_last": 13.941672325134277,
+     "sofa_total": 13.673730850219727,
+     "urine_ml_per_h": 10.754612922668457,
+     "fio2_min": 10.537001609802246,
+     "fio2_last": 10.21743392944336,
+     "bilirubin_last": 10.069991111755371,
+     "gcs_count": 9.818143844604492,
+     "vaso_drugs": 9.086445808410645,
+     "urine_n": 8.372176170349121,
+     "map_mean": 8.270425796508789
+    }
+   },
+   "4 + lactate + base excess": {
+    "n_features": 66,
+    "val_auroc": 0.7913155427089491,
+    "test_auroc": 0.8276531516561426,
+    "test_auroc_ci95": [
+     0.8026093622155749,
+     0.8488086053266307
+    ],
+    "test_auprc": 0.647557891189449,
+    "test_auprc_ci95": [
+     0.598191597453075,
+     0.6935505867998357
+    ],
+    "best_params": {
+     "max_depth": 6,
+     "learning_rate": 0.056515745772410225,
+     "min_child_weight": 12.973992446166223,
+     "subsample": 0.8010601789062304,
+     "colsample_bytree": 0.8033381902840664,
+     "reg_lambda": 0.17605878736576402
+    },
+    "best_iteration": 108,
+    "top_features_gain": {
+     "gcs_last": 33.326805114746094,
+     "lactate_last": 22.337116241455078,
+     "urine_total": 18.164003372192383,
+     "sofa_total": 16.275014877319336,
+     "lactate_min": 14.770750045776367,
+     "sofa_coag": 13.080499649047852,
+     "base_excess_last": 12.604761123657227,
+     "urine_n": 10.376069068908691,
+     "bilirubin_last": 10.196511268615723,
+     "gcs_count": 10.15489673614502,
+     "fio2_last": 10.079216003417969,
+     "map_mean": 10.011868476867676
+    }
+   }
+  },
+  "reference": {
+   "sofa_total_alone": {
+    "test_auroc": 0.6572587792179019,
+    "test_auprc": 0.42781172937474243
+   },
+   "age_plus_sofa_logistic": {
+    "test_auroc": 0.7011147114212917,
+    "test_auprc": 0.47919915781808753
+   }
+  }
+ }
+}

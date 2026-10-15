@@ -168,3 +168,21 @@ defined by: adults (>= 18 y at ICU admission) -> SOFA computable in the first W 
 lactate in the first W h -> base excess in the first W h -> not died within the first W h, with the final box split by
 28-day all-cause mortality. W = 24 h: 61,532 ICU stays -> 53,329 adult -> 11,140 SOFA -> 9,731 lactate -> 9,731 base
 excess -> 9,299 included (2,296 died within 28 days, 24.7 %). W = 6 h: 5,858 included (1,632 died, 27.9 %).
+
+### SOFA cohort: SOFA inputs ± lactate ± base excess, 28-day mortality (`09_sofa_feature_tiers.py`, `10_tabpfn_tiers.py`)
+
+On the flow-chart cohort (adults, SOFA computable, lactate, base excess, alive at W h), four nested feature sets from
+the first W hours predict 28-day mortality. Test AUROC (bootstrap 95 % CI in `results/sofa_tiers/summary.md`):
+
+| feature set | XGBoost 6 h | TabPFN v2 6 h | XGBoost 24 h | TabPFN v2 24 h |
+|---|---|---|---|---|
+| SOFA total score alone (reference) | 0.650 | – | 0.657 | – |
+| 1 SOFA inputs (+ component scores) | 0.794 | 0.808 | 0.814 | 0.820 |
+| 2 + lactate | 0.801 | 0.819 | 0.823 | 0.822 |
+| 3 + base excess | 0.801 | 0.816 | 0.821 | 0.822 |
+| 4 + lactate + base excess | 0.809 | 0.818 | **0.828** | 0.823 |
+
+Cohorts: 5,757 stays (6 h; test 853, 29 % died) and 9,229 (24 h; test 1,374, 26 % died). Lactate / base excess add
+~0.01 AUROC on top of the SOFA inputs (CIs overlap); the 24 h window is ~0.02 above 6 h; TabPFN v2 (pre-trained
+tabular transformer, no tuning, ~20–50 s per fit) matches XGBoost at 24 h and is slightly better at 6 h — see
+`results/sofa_tiers/transformer_feasibility.md` for the other transformer options and why they were not pursued.
