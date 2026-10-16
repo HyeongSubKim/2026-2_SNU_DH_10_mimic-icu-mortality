@@ -57,3 +57,16 @@ top features by gain (tier 4): gcs_last 27, lactate_last 16, urine_ml_per_h 14, 
 | 6 SOFA component scores + age + sex (logistic) | 0.711 [0.673, 0.748] | 0.507 | 0.707 [0.676, 0.739] | 0.487 |
 
 SOFA total (worst values in the window): mean 8.1 at 6 h (died 9.5 vs alive 7.5), 9.3 at 24 h (died 10.8 vs alive 8.8).
+
+## SOFA score alone (no model: the raw worst-in-window SOFA total is the risk score)
+
+| | 6 h | 24 h |
+|---|---|---|
+| cohort / 28-day mortality | 5,757 / 27.9 % | 9,229 / 24.7 % |
+| AUROC, whole cohort [95 % CI] | 0.655 [0.639, 0.670] | 0.650 [0.637, 0.663] |
+| AUROC, test split only | 0.650 [0.609, 0.689] | 0.657 [0.623, 0.691] |
+| AUPRC, whole cohort | 0.430 | 0.395 |
+| component scores alone (AUROC) | cardio 0.634, renal 0.598, resp 0.574, CNS 0.569, coag 0.549, liver 0.539 | cardio 0.613, renal 0.613, resp 0.565, coag 0.560, liver 0.558, CNS 0.550 |
+| 28-day mortality by SOFA 0–5 / 6–8 / 9–11 / >= 12 | 15.5 / 23.7 / 31.5 / 48.6 % | 14.2 / 18.6 / 22.4 / 39.8 % |
+| SOFA >= 8: flagged, sens, spec, PPV | 54 %, 0.69, 0.52, 0.36 | 67 %, 0.79, 0.37, 0.29 |
+| SOFA >= 12: flagged, sens, spec, PPV | 17 %, 0.29, 0.88, 0.49 | 27 %, 0.43, 0.79, 0.40 |
