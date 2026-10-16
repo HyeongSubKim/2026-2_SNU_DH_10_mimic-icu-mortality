@@ -46,3 +46,14 @@ top features by gain (tier 4): gcs_last 27, lactate_last 16, urine_ml_per_h 14, 
 | 3 + base excess (TabPFN v2) | 63 | 0.835 [0.809, 0.858] | 0.661 [0.606, 0.710] | 21 s |
 | 4 + lactate + base excess (TabPFN v2) | 68 | 0.837 [0.811, 0.859] | 0.673 [0.621, 0.717] | 24 s |
 
+
+## Conventional SOFA score references (same test sets; logistic regressions fitted on the train split)
+
+| reference | 6 h AUROC [95 % CI] | 6 h AUPRC | 24 h AUROC [95 % CI] | 24 h AUPRC |
+|---|---|---|---|---|
+| SOFA total score alone | 0.650 [0.611, 0.689] | 0.443 | 0.657 [0.623, 0.693] | 0.428 |
+| SOFA total + age (logistic) | 0.708 [0.670, 0.744] | 0.511 | 0.701 [0.670, 0.732] | 0.479 |
+| SOFA total + age + sex (logistic) | 0.705 [0.665, 0.741] | 0.507 | 0.700 [0.669, 0.731] | 0.479 |
+| 6 SOFA component scores + age + sex (logistic) | 0.711 [0.673, 0.748] | 0.507 | 0.707 [0.676, 0.739] | 0.487 |
+
+SOFA total (worst values in the window): mean 8.1 at 6 h (died 9.5 vs alive 7.5), 9.3 at 24 h (died 10.8 vs alive 8.8).

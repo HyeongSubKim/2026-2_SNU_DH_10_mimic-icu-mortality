@@ -187,6 +187,14 @@ Cohorts: 5,757 stays (6 h; test 853, 29 % died) and 9,229 (24 h; test 1,374, 26 
 tabular transformer, no tuning, ~20–50 s per fit) matches XGBoost at 24 h and is slightly better at 6 h — see
 `results/sofa_tiers/transformer_feasibility.md` for the other transformer options and why they were not pursued.
 
-With age and sex added to every tier (`--demographics`, `results/sofa_tiers_demo/`): XGBoost 6 h 0.814 / 0.812 / 0.823 /
-0.823 and 24 h 0.826 / 0.831 / 0.831 / **0.837**; TabPFN v2 6 h 0.824 / 0.830 / 0.833 / 0.832 and 24 h 0.831 / 0.833 /
-0.835 / **0.837** (tiers 1–4). Demographics add ~+0.01–0.02 AUROC; the ordering of the tiers is unchanged.
+With age and sex added to every tier (`--demographics`, `results/sofa_tiers_demo/`), test AUROC:
+
+| model | SOFA total alone | SOFA + age + sex (logistic) | 1 SOFA inputs | 2 + lactate | 3 + base excess | 4 + lactate + BE |
+|---|---|---|---|---|---|---|
+| 6 h, XGBoost | 0.650 | 0.705 | 0.814 | 0.812 | 0.823 | 0.823 |
+| 6 h, TabPFN v2 | 0.650 | 0.705 | 0.824 | 0.830 | 0.833 | 0.832 |
+| 24 h, XGBoost | 0.657 | 0.700 | 0.826 | 0.831 | 0.831 | **0.837** |
+| 24 h, TabPFN v2 | 0.657 | 0.700 | 0.831 | 0.833 | 0.835 | **0.837** |
+
+Demographics add ~+0.01–0.02 AUROC and the ordering of the tiers is unchanged. The conventional SOFA score is the
+reference: the same variables fed to a learner raise AUROC by ~0.13–0.17 over SOFA + age + sex (logistic).
