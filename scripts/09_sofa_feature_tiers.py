@@ -255,10 +255,12 @@ def main():
         p_lr = lr.predict_proba(Z[part['test']])[:, 1]
         res['reference']['age_plus_sofa_logistic'] = {'test_auroc': float(roc_auc_score(yt, p_lr)), 'test_auprc': float(average_precision_score(yt, p_lr))}
         curves.append(('SOFA total alone', yt, sofa_t[part['test']]))
+        preds = sc[['SUBJECT_ID', 'dataset', 'y28']].copy(); preds['sofa_total'] = sofa_t
         for tier, pick in TIERS.items():
             cols = pick(Xc.columns)
             predict, best = fit_xgb(Xc.loc[part['train'], cols], y[part['train']], Xc.loc[part['val'], cols], y[part['val']], args.n_trials, args.device)
             p = predict(Xc.loc[part['test'], cols])
+            preds[tier] = predict(Xc[cols])          # val + test predictions, for operating-point analysis
             auc_ci, ap_ci = boot_ci(yt, p)
             gain = best['booster'].get_score(importance_type='gain')
             res['tiers'][tier] = {'n_features': len(cols), 'val_auroc': float(best['auc']), 'test_auroc': float(roc_auc_score(yt, p)),
@@ -269,6 +271,7 @@ def main():
             print(f"  {tier:28s} feats {len(cols):3d}  val {best['auc']:.3f}  test AUROC {res['tiers'][tier]['test_auroc']:.3f} "
                   f"[{auc_ci[0]:.3f}, {auc_ci[1]:.3f}]  AUPRC {res['tiers'][tier]['test_auprc']:.3f}", flush=True)
         results[W] = res
+        preds.to_parquet(OUT / f'preds_W{W}.parquet')
         fig, ax = plt.subplots(figsize=(5.5, 5))
         for name, yy, pp in curves:
             fpr, tpr, _ = roc_curve(yy, pp); ax.plot(fpr, tpr, label=f'{name}  {roc_auc_score(yy, pp):.3f}', lw=1.3, ls='--' if 'alone' in name else '-')

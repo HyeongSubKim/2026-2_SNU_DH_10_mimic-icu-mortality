@@ -60,6 +60,8 @@ def main():
         tr = df.dataset.isin(['train', 'val']).to_numpy(); te = (df.dataset == 'test').to_numpy()
         y = df.y28.to_numpy(); yt = y[te]
         results[W] = {'n_train': int(tr.sum()), 'n_test': int(te.sum()), 'tiers': {}}
+        trn = (df.dataset == 'train').to_numpy(); val = (df.dataset == 'val').to_numpy()
+        preds = df[['SUBJECT_ID', 'dataset', 'y28']].copy()
         md.append(f'### W = {W} h (train+val {int(tr.sum()):,}, test {int(te.sum()):,})\n\n| feature set | # features | test AUROC [95 % CI] | test AUPRC [95 % CI] | fit+predict time |\n|---|---|---|---|---|\n')
         for tier, pick in TIERS.items():
             cols = pick(feats)
@@ -69,6 +71,9 @@ def main():
             clf.fit(X[tr], y[tr])
             p = clf.predict_proba(X[te])[:, 1]
             dt = time.time() - t0
+            # validation predictions from a train-only fit (for threshold selection); test uses train+val as before
+            pv = TabPFNClassifier(device=args.device, model_path=model_path, n_estimators=args.n_estimators, random_state=0).fit(X[trn], y[trn]).predict_proba(X[val])[:, 1]
+            col = np.full(len(df), np.nan); col[te] = p; col[val] = pv; preds[tier] = col
             auc_ci, ap_ci = boot_ci(yt, p)
             r = {'n_features': len(cols), 'test_auroc': float(roc_auc_score(yt, p)), 'test_auroc_ci95': auc_ci,
                  'test_auprc': float(average_precision_score(yt, p)), 'test_auprc_ci95': ap_ci, 'seconds': dt}
@@ -78,6 +83,7 @@ def main():
             md.append(f"| {tier} (TabPFN v2) | {len(cols)} | {r['test_auroc']:.3f} [{auc_ci[0]:.3f}, {auc_ci[1]:.3f}] | "
                       f"{r['test_auprc']:.3f} [{ap_ci[0]:.3f}, {ap_ci[1]:.3f}] | {dt:.0f} s |\n")
         md.append('\n')
+        preds.to_parquet(OUT / f'tabpfn_preds_W{W}.parquet')
     json.dump(results, open(OUT / 'tabpfn_metrics.json', 'w'), indent=1)
     with open(OUT / 'summary.md', 'a') as f:
         f.write(''.join(md))

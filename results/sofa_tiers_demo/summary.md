@@ -32,20 +32,19 @@ top features by gain (tier 4): gcs_last 27, lactate_last 16, urine_ml_per_h 14, 
 
 | feature set | # features | test AUROC [95 % CI] | test AUPRC [95 % CI] | fit+predict time |
 |---|---|---|---|---|
-| 1 SOFA inputs (TabPFN v2) | 58 | 0.824 [0.794, 0.855] | 0.662 [0.600, 0.722] | 22 s |
-| 2 + lactate (TabPFN v2) | 63 | 0.830 [0.800, 0.858] | 0.674 [0.613, 0.734] | 15 s |
-| 3 + base excess (TabPFN v2) | 63 | 0.833 [0.804, 0.861] | 0.673 [0.613, 0.732] | 18 s |
-| 4 + lactate + base excess (TabPFN v2) | 68 | 0.832 [0.803, 0.861] | 0.681 [0.621, 0.739] | 19 s |
+| 1 SOFA inputs (TabPFN v2) | 58 | 0.824 [0.794, 0.855] | 0.662 [0.600, 0.722] | 19 s |
+| 2 + lactate (TabPFN v2) | 63 | 0.830 [0.800, 0.858] | 0.674 [0.613, 0.734] | 21 s |
+| 3 + base excess (TabPFN v2) | 63 | 0.833 [0.804, 0.861] | 0.673 [0.613, 0.732] | 28 s |
+| 4 + lactate + base excess (TabPFN v2) | 68 | 0.832 [0.803, 0.861] | 0.681 [0.621, 0.739] | 24 s |
 
 ### W = 24 h (train+val 7,855, test 1,374)
 
 | feature set | # features | test AUROC [95 % CI] | test AUPRC [95 % CI] | fit+predict time |
 |---|---|---|---|---|
-| 1 SOFA inputs (TabPFN v2) | 58 | 0.831 [0.805, 0.853] | 0.649 [0.594, 0.699] | 19 s |
-| 2 + lactate (TabPFN v2) | 63 | 0.833 [0.806, 0.855] | 0.663 [0.611, 0.709] | 21 s |
-| 3 + base excess (TabPFN v2) | 63 | 0.835 [0.809, 0.858] | 0.661 [0.606, 0.710] | 21 s |
-| 4 + lactate + base excess (TabPFN v2) | 68 | 0.837 [0.811, 0.859] | 0.673 [0.621, 0.717] | 24 s |
-
+| 1 SOFA inputs (TabPFN v2) | 58 | 0.831 [0.805, 0.853] | 0.649 [0.594, 0.699] | 23 s |
+| 2 + lactate (TabPFN v2) | 63 | 0.833 [0.806, 0.855] | 0.663 [0.611, 0.709] | 27 s |
+| 3 + base excess (TabPFN v2) | 63 | 0.835 [0.809, 0.858] | 0.661 [0.606, 0.710] | 27 s |
+| 4 + lactate + base excess (TabPFN v2) | 68 | 0.837 [0.811, 0.859] | 0.673 [0.621, 0.717] | 25 s |
 
 ## Conventional SOFA score references (same test sets; logistic regressions fitted on the train split)
 
