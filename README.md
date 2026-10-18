@@ -232,3 +232,9 @@ leakage probe). XGBoost, test AUROC (AUPRC), paired ΔAUROC vs the structured mo
 Single concepts are weak (best AUROC alone 0.56: "worsening" language, vasopressor mentions, unresponsiveness, altered
 mental status); the dictionary adds ≈ +0.01 at 24 h and nothing at 6 h, versus +0.023 for UTDE late fusion.
 L01 terms (DNR / CMO / hospice …) are present in 10 % of 24 h stays with 55 % vs 21 % mortality — must stay out of the model.
+
+**Term-guided attention ablation (UTDE, 24 h).** Giving Longformer global attention to every token that matches the
+N01–N50 dictionary (median 8 term tokens per note, in addition to [CLS]; `--term_global_attention` in the UTDE adapter)
+changes nothing: UTDE 0.843 vs 0.844 (Δ −0.000 [−0.010, +0.010]), fused with TabPFN 0.857 vs 0.860 (Δ −0.003
+[−0.009, +0.004]); the two models' test probabilities correlate at 0.93. The encoder already attends to these terms
+when they matter; the dictionary's value is as interpretable features (+0.01) and as a prompt schema, not as an attention prior.
