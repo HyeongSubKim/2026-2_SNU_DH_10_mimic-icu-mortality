@@ -54,7 +54,7 @@ def main():
         if split == 'test':
             z = np.load(run / f'test_logits_{args.seed}.npz'); p_utde, y_utde = z['logits'], z['labels']
         else:
-            ck = torch.load(glob.glob(str(run / '*' / f'{args.seed}.pth.tar'))[0], map_location='cpu')
+            ck = torch.load(glob.glob(str(run / '*' / f'{args.seed}.pth.tar'))[0], map_location='cpu', weights_only=False)   # our own checkpoint
             p_utde = np.array(ck['logits']); y_utde = None
         assert len(p_utde) == len(names), f'{split}: UTDE wrote {len(p_utde)} probabilities for {len(names)} instances'
         t = tab.loc[names]

@@ -7,6 +7,8 @@ results/**/*.log
 results/**/*.pickle
 results/**/*.json
 !results/**/metrics.json
+!results/**/metrics_*.json
+!results/**/tabpfn_metrics.json
 !results/**/saturation.csv
 !results/**/shap_mean_abs.csv
 __pycache__/
