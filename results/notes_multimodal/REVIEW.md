@@ -73,3 +73,27 @@ Stage 1 (bundle builder + TF-IDF late fusion, both windows): ~half a day includi
 Stage 2 (GatorTron embeddings, early fusion into XGB / TabPFN, subgroup and paired-bootstrap reporting): one more day.
 Reuse: `my_datasets/mimic-iii/build_mimic3_note_label.py` (de-id stripping, section parsing) and
 `mimic_icu/data/noteevents_meta.parquet` (timing metadata already extracted).
+
+## 6. Reference papers (baselines for this experiment)
+
+Structured + notes (MIMIC-III, ICU mortality) — the direct multimodal baselines
+- Khadanga S, Aggarwal K, Joty S, Srivastava J. Using clinical notes with time series data for ICU management. EMNLP-IJCNLP 2019, pp. 6432–6437. https://aclanthology.org/D19-1678/ (code: github.com/kaggarwal/ClinicalNotesICU)
+- Deznabi I, Iyyer M, Fiterau M. Predicting in-hospital mortality by combining clinical notes with time-series data. Findings of ACL 2021. https://aclanthology.org/2021.findings-acl.352/ (code: github.com/Information-Fusion-Lab-Umass/ClinicalNotes_TimeSeries)
+- Zhang D, Yin C, Zeng J, Yuan X, Zhang P. Combining structured and unstructured data for predictive models: a deep learning approach. BMC Med Inform Decis Mak 2020;20:280. https://doi.org/10.1186/s12911-020-01297-6
+- Lyu W, Dong X, Wong R, Zheng S, Abell-Hart K, Wang F, Chen C. A multimodal transformer: fusing clinical notes with structured EHR data for interpretable in-hospital mortality prediction. AMIA Annu Symp Proc 2022:719–728. https://pmc.ncbi.nlm.nih.gov/articles/PMC10148371/
+- Zhu Y, et al. ClinicRealm: re-evaluating large language models with conventional machine learning for non-generative clinical prediction tasks. npj Digit Med 2026;9:319. (structured EHR + notes, LLM vs ML; `src/multimodal/` fusion code)
+
+Notes only
+- van Aken B, et al. Clinical outcome prediction from admission notes using self-supervised knowledge integration. EACL 2021. https://arxiv.org/abs/2102.04110 (admission-note construction used for our MIMIC-III note task)
+
+Structured-only benchmarks
+- Harutyunyan H, Khachatrian H, Kale DC, Ver Steeg G, Galstyan A. Multitask learning and benchmarking with clinical time series data. Sci Data 2019;6:96. (MIMIC-III in-hospital mortality from the first 48 h; LSTM AUROC ≈ 0.86)
+
+Clinical score baselines (SOFA, lactate, base excess)
+- Vincent JL, et al. The SOFA (Sepsis-related Organ Failure Assessment) score to describe organ dysfunction/failure. Intensive Care Med 1996;22:707–710.
+- Raith EP, Udy AA, Bailey M, et al. Prognostic accuracy of the SOFA score, SIRS criteria, and qSOFA score for in-hospital mortality among adults with suspected infection admitted to the ICU. JAMA 2017;317(3):290–300. (SOFA crude AUROC 0.75; adjusted 0.815)
+- Smith I, Kumar P, Molloy S, et al. Base excess and lactate as prognostic indicators for patients admitted to intensive care. Intensive Care Med 2001;27:74–83. (admission BE AUROC 0.73, lactate 0.78; BE < −4 & lactate > 1.5 → sens 80 %, spec 59 %)
+- Follow-up: Base excess and lactate as prognostic indicators for patients admitted to intensive care — 15 years later. https://pmc.ncbi.nlm.nih.gov/articles/PMC4797108/
+
+Tabular transformer
+- Hollmann N, et al. Accurate predictions on small data with a tabular foundation model (TabPFN v2). Nature 2025.
