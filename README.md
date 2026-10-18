@@ -215,3 +215,20 @@ split; paired bootstrap for the differences). Test set:
 
 UTDE alone trails the tabular model at 6 h (six time steps, bedside notes for 44 % of stays) and matches it at 24 h; the
 two are complementary — fusing them is the best result so far on both windows and is significant at 24 h.
+
+### Curated note-concept dictionary (N01–N50) as features (`15_note_concepts.py`)
+
+Fifty clinician-curated concept groups (co-morbidity, acute state, neurology, base-excess causes, interventions, trajectory
+language) are counted in the notes available by INTIME + W (negation-aware regex; goals-of-care terms L01 held out as a
+leakage probe). XGBoost, test AUROC (AUPRC), paired ΔAUROC vs the structured model:
+
+| feature set | 6 h | Δ | 24 h | Δ |
+|---|---|---|---|---|
+| A structured (tier 4 + age/sex) | 0.823 (0.662) | – | 0.837 (0.660) | – |
+| B concepts only | 0.683 (0.464) | −0.140 | 0.751 (0.505) | −0.086 [−0.115, −0.057] |
+| C structured + concepts (negation-aware) | 0.819 (0.656) | −0.004 | 0.844 (0.674) | +0.006 [−0.003, +0.016] |
+| C0 structured + concepts (raw counts) | 0.830 (0.673) | +0.007 | 0.847 (0.686) | +0.010 [+0.001, +0.019] |
+
+Single concepts are weak (best AUROC alone 0.56: "worsening" language, vasopressor mentions, unresponsiveness, altered
+mental status); the dictionary adds ≈ +0.01 at 24 h and nothing at 6 h, versus +0.023 for UTDE late fusion.
+L01 terms (DNR / CMO / hospice …) are present in 10 % of 24 h stays with 55 % vs 21 % mortality — must stay out of the model.
