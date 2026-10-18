@@ -234,3 +234,11 @@ Design that follows: frozen TabPFN embedding (static, per stay) as the tabular b
 attention) as the text branch; concatenation or cross-attention + MLP head trained on train rows. Ladder to report:
 TabPFN alone → logistic on frozen embedding → embedding + note branch → full UTDE; and the reverse direction (UTDE embedding
 appended to the TabPFN feature table) as the alternative fusion.
+
+### 10. Stage 1 result: UTDE reproduction + TabPFN/UTDE late fusion (done)
+
+Validation AUROC by epoch — W=24: 0.769, 0.786, 0.788, 0.803, 0.810 (best, epoch 5); W=6: 0.720 → 0.735 → 0.764 (epoch 4), 0.751 (epoch 5).
+Test: 6 h — TabPFN 0.832, UTDE 0.798, fusion 0.845 (+0.014 vs TabPFN [−0.002, +0.029]); 24 h — TabPFN 0.837, UTDE 0.844,
+fusion 0.860 (+0.023 [+0.011, +0.035]). Stacker weights ≈ equal (0.41 / 0.43 at 24 h), i.e. the two models carry
+different information. Compute: ~4.5 h (24 h) / ~5.5 h (6 h) on one A6000 (shared). Artefacts: ../MultimodalMIMIC/run/sofa28_W{6,24},
+results/late_fusion/. Next: Record2Vec (Stage 2) plugged into the same fusion table.

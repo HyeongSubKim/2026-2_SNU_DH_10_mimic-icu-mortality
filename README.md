@@ -198,3 +198,20 @@ With age and sex added to every tier (`--demographics`, `results/sofa_tiers_demo
 
 Demographics add ~+0.01–0.02 AUROC and the ordering of the tiers is unchanged. The conventional SOFA score is the
 reference: the same variables fed to a learner raise AUROC by ~0.13–0.17 over SOFA + age + sex (logistic).
+
+### UTDE (ICML 2023) on the same cohort, and TabPFN + UTDE late fusion
+
+UTDE = `MultimodalMIMIC` (Zhang et al., ICML 2023) run unchanged except for an adapter (channel count, val-AUROC checkpoint
+selection, saving test probabilities, local Clinical-Longformer path): irregular hourly series of 21 channels + the last
+5 notes (Clinical-Longformer, 1024 tokens), 6 epochs, original hyper-parameters. Data built by `13_build_utde_dataset.py`
+from the identical cohort / split / label; late fusion by `14_late_fusion.py` (logistic stacker fitted on the validation
+split; paired bootstrap for the differences). Test set:
+
+| model | 6 h AUROC (AUPRC) | ΔAUROC vs TabPFN | 24 h AUROC (AUPRC) | ΔAUROC vs TabPFN |
+|---|---|---|---|---|
+| TabPFN v2, tier 4 + age/sex (structured) | 0.832 (0.681) | – | 0.837 (0.673) | – |
+| UTDE (time series + notes) | 0.798 (0.618) | −0.034 [−0.066, −0.003] | 0.844 (0.680) | +0.007 [−0.013, +0.026] |
+| **late fusion TabPFN + UTDE** | **0.845 (0.704)** | +0.014 [−0.002, +0.029] | **0.860 (0.707)** | **+0.023 [+0.011, +0.035]** |
+
+UTDE alone trails the tabular model at 6 h (six time steps, bedside notes for 44 % of stays) and matches it at 24 h; the
+two are complementary — fusing them is the best result so far on both windows and is significant at 24 h.
