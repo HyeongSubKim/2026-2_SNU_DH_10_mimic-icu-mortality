@@ -97,3 +97,21 @@ Clinical score baselines (SOFA, lactate, base excess)
 
 Tabular transformer
 - Hollmann N, et al. Accurate predictions on small data with a tabular foundation model (TabPFN v2). Nature 2025.
+
+### Newer architecture baselines (top-tier venues first)
+
+| paper | venue | data / task | what it fuses | code |
+|---|---|---|---|---|
+| Zhang X, Li S, Chen Z, Yan X, Petzold L. Improving medical predictions by irregular multimodal EHR modeling (UTDE) | **ICML 2023** | MIMIC-III, 48 h in-hospital mortality + phenotyping (Harutyunyan cohort) | irregular time series (gated imputation/interpolation embeddings) + sequence of note embeddings as irregular series, interleaved cross-time attention | github.com/XZhang97666/MultimodalMIMIC |
+| Xu M, et al. FlexCare: leveraging cross-task synergy for flexible multimodal healthcare prediction | **KDD 2024** | MIMIC-IV (+ MIMIC-CXR), several tasks, incomplete modalities | time series + notes (+ images), task-guided mixture of experts, asynchronous multi-task | github.com/mhxu1998/FlexCare |
+| Zhu Y, et al. EMERGE: enhancing multimodal EHR predictive modeling with retrieval-augmented generation | CIKM 2024 | MIMIC-III / IV, in-hospital mortality, 30-day readmission | time series + notes + LLM/RAG patient summary, cross-attention fusion; compares against UTDE | github.com/yhzhu99/EMERGE |
+| King R, Yang T, Mortazavi BJ. Multimodal pretraining of medical time series and notes | ML4H 2023 | MIMIC-III, mortality + phenotyping, few labels | contrastive + masked pretraining aligning measurements and notes; large gains when <= 1–10 % labelled | github.com/kingrc15/multimodal-clinical-pretraining |
+| Bakumenko A, Hoelscher J, Smith H. Transparent early ICU mortality prediction with clinical transformer and per-case modality attribution | arXiv 2511.15847 (2025) | MIMIC-III, 48 h | late fusion: logistic stacker over BiLSTM (vitals) + fine-tuned ClinicalModernBERT (notes); AUROC 0.891 vs 0.876 best single modality | – |
+| Ben Cheikh Larbi I, et al. Integrating text and time-series into (large) language models to predict medical outcomes | BioCreative IX 2025 (arXiv 2509.13696) | MIMIC-III, 48 h, admission notes + 13 features | instruction-tuned Llama 3.1 with DSPy prompt optimisation vs BioClinicalBERT; "comparable to specialised multimodal systems" | – |
+
+Reading: every recent paper still benchmarks on the 48 h / in-hospital-mortality Harutyunyan cohort and uses **UTDE (ICML 2023)** as the
+reference multimodal architecture; NeurIPS / ICLR 2024–25 work has moved to MIMIC-IV foundation models and LLM + time-series, not to
+a new notes-plus-vitals fusion baseline. For this project: adopt UTDE as the "published architecture" comparison (its code takes an
+hourly series + a list of timed notes, which is what the bundle builder produces), and the Bakumenko-style late fusion as the simple
+strong baseline — which is the design proposed in §2. Numbers from these papers are not transferable (48 h window, in-hospital
+death, ~21 k unselected stays vs our 6 / 24 h, 28-day death, SOFA-selected cohort); only the architectures are.
