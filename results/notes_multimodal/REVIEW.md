@@ -177,3 +177,44 @@ Expected outcome, stated before running:
   finding even if in-distribution AUROC is equal.
 - The real payoff is condition D: one frozen text encoder handles the vitals summary and the clinical notes, so the
   multimodal experiment collapses into a single pipeline with ~25× fewer tokens than raw serialisation.
+
+### 8. Stage 3 — an agent-based variant (ML → LLM representation → agent)
+
+Definition used here: an **agent** = an LLM that, given a goal and a set of tools, **plans, calls tools, observes the results
+and iterates** before committing to an answer (ReAct-style loop), with state/memory across steps. A single frozen LLM call
+(Record2Vec's summariser, ClinicRealm's zero-shot prompt) is *not* an agent; pasting tool outputs into one prompt is
+"tool-augmented prompting", not an agent either. Autonomy over *which information to gather and when* is the defining property.
+
+Reference systems (2024–26): ColaCare (WWW 2025; DoctorAgents wrap domain ML models + MetaAgent synthesises; MIMIC-IV
+mortality AUROC 88.8 / AUPRC 54.1, AUPRC +0.9–4.5 % over the best domain model), EHRAgent (EMNLP 2024; code-generating
+agent over EHR tables), AgentMD (npj Digit Med 2025; 2,164 clinical calculators as tools; 87.7 % vs 40.9 % GPT-4 accuracy on
+risk calculation), AgentClinic (npj Digit Med 2026; sequential test ordering under incomplete information — accuracy
+collapses relative to static QA), MedAgentBench (FHIR environment; best agent 69.7 % task success).
+
+What to add for a defensible Stage 3 on this cohort:
+1. **Tool layer, time-gated.** Every tool exposes only data with availability time ≤ INTIME + W: (a) structured risk model
+   (XGBoost / TabPFN probability + SHAP top factors), (b) SOFA / lactate / BE calculators, (c) note retriever (bundle from §2),
+   (d) Record2Vec summary of the vitals, (e) guideline / literature RAG (optional), (f) a "request additional measurement"
+   tool that returns a value only if it was actually measured within the window.
+2. **Orchestration.** One agent (ReAct, LangGraph or DSPy) with a fixed budget of steps; optional MDT-style multi-agent
+   (ColaCare) — but add that only after the single agent is evaluated, otherwise the ablation is uninterpretable.
+3. **Output contract.** A probability in [0, 1] plus a structured rationale (which tools, which evidence), so AUROC / AUPRC /
+   calibration are computed exactly as for the ML rows.
+4. **Baselines that isolate the agency.** (i) LLM zero-shot on the serialised window (no tools); (ii) tool-augmented single
+   prompt (all tool outputs pasted once); (iii) the agent loop. The difference (iii) − (ii) is the value of *deciding what to
+   look at*; (ii) − structured XGB is the value of the LLM as integrator.
+5. **A task where agency can matter: active acquisition.** Reframe the lactate / BE question as a decision: at hour W the
+   agent may "order" up to k extra tests from the measured-but-hidden set; score prediction quality vs number of tests ordered
+   (value-of-information curve) against random / always-all / never policies. This is the one setting where an agent can beat
+   a fixed-input model, because the ML model cannot choose its inputs.
+6. **Evaluation protocol.** Same cohort, split and test set; paired bootstrap vs the structured model; calibration; matched
+   alarm-burden operating points; **run-to-run action reliability** (repeat each case ≥ 3 times; agents are known to change tool
+   sequences between runs); cost (tokens, tool calls, latency) per case; CareVue→MetaVision transfer as in §7; trajectory audit
+   on a random sample of 100 cases for hallucinated evidence and leakage (did any tool return post-window data).
+7. **Guardrails.** Deterministic decoding, tool schemas with explicit time filters, no free-form SQL on raw tables (EHRAgent-style
+   code execution is a leakage risk), log every tool call.
+
+Expected outcome: for the fixed-input 28-day prediction the agent should match, not beat, XGBoost / TabPFN (ColaCare's gains
+are ~1–4 % AUPRC with much larger cohorts); the credible wins are (a) the active-acquisition curve, (b) evidence-grounded
+rationales, (c) smaller transfer drop. Cost: ~15 k cases × (4–8 tool calls, ~3–6 k tokens) — a day of local vLLM time per
+configuration; development ≈ 1–2 weeks.
