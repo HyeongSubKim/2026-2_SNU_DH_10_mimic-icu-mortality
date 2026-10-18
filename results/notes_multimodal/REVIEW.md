@@ -137,3 +137,43 @@ death, ~21 k unselected stays vs our 6 / 24 h, 28-day death, SOFA-selected cohor
 Implication for this project: a novel fusion architecture is not where the field's attention is; a careful clinical question
 (SOFA cohort, 6 h vs 24 h, 28-day death, lactate / BE, leak-safe note timing, matched-alarm-burden operating points) with strong
 simple models (XGBoost, TabPFN, late fusion) and one published architecture (UTDE) as comparison is the defensible design.
+
+### 7. Applying the ICLR 2026 "Record2Vec" recipe (Ji, Sun, Amaral, Goldenberg, Krishnan) to this cohort
+
+What the paper does: 48 h irregular ICU window → canonical text serialisation → frozen LLM (Gemini-2.0 Flash / MedGemma /
+Llama-3.1) writes a concise summary → frozen text embedder (Qwen3-embedding) → fixed vector → downstream predictor
+(PatchTSMixer / MLP). Cohorts MIMIC-IV 57 k, HiRID 32 k, PPICU 39 k stays; tasks: forecasting, LoS, in-hospital mortality,
+vasopressor / antibiotic use, lab ordering. Baselines: grid imputation + neural nets, TSDE (SSL), TimesFM (TS foundation
+model), GenHPF. **No GBDT / tabular baseline on clinician-curated features.** In-distribution it wins 13/15 columns
+(MIMIC-IV mortality AUROC 0.888); its real claims are cross-site transfer (10/10 columns; HiRID→PPICU mortality 0.72 vs
+0.64 TimesFM) and few-shot (16 target labels ≈ full in-distribution model). Ablations: raw serialisation embedded
+directly (no summary) is often best in-distribution, summaries win under shift; prompt style changes variance more than mean.
+Code: github.com/Jerryji007/Record2Vec-ICLR2026.
+
+Evaluation plan if we adopt it (all on the SOFA cohort, W = 6 / 24 h, 28-day death, same patient split):
+1. Conditions — A structured XGBoost / TabPFN (existing, 0.823 / 0.837); B Record2Vec-style: LLM summary of the first W h
+   → text embedding → LR / XGB / TabPFN; B0 control: raw serialisation embedded without summary; C hybrid: embedding PCs +
+   structured features; D unified text: vitals summary + clinical notes through the same embedder (the multimodal variant).
+2. In-distribution — test AUROC / AUPRC with **paired** bootstrap of each condition minus A; calibration (Brier, slope) because
+   embedding-based classifiers are often less calibrated; matched-alarm-burden operating point (table B).
+3. Shift and few-shot — this is where the method is supposed to win, and MIMIC-III gives a natural pseudo-site split:
+   **train on CareVue stays (2001–08), test on MetaVision (2008–12) and vice versa** (different charting system, item IDs,
+   documentation habits); report absolute AUROC and the relative drop vs in-distribution; few-shot = source model + 16 / 64 /
+   512 target labels. Expect the structured model's drop to be larger than Record2Vec's.
+4. Robustness of the text path — ≥ 3 summarisation runs (temperature 0 still varies with prompt wording), report mean ± sd;
+   compare 2 prompt styles (structured trend summary vs free narrative).
+5. Leakage — the summariser sees only data from the first W h; no outcome, no later labs; keep the same STORETIME rules for
+   notes in condition D.
+Cost: ~15 k windows × ~400 input / ~150 output tokens; local vLLM (gpt-oss-120b when two GPUs are free, or Qwen2.5-7B /
+MedGemma-4B on one GPU) — a few hours; embedding minutes.
+
+Expected outcome, stated before running:
+- In-distribution: Record2Vec ≈ or slightly below the tuned tabular models (−0.01 … −0.03 AUROC). Reasons: our features are
+  already clinician-curated worst / last / count aggregates of the same variables; GBDT / TabPFN are hard to beat on ~5 k rows
+  (YAIB, Purushotham 2018); a text summary discards numeric precision; the paper's own baselines were neural nets on grid
+  imputation, which are known to trail GBDT on tabular ICU data, and its downstream models were trained on 10× more samples.
+- Hybrid C: +0.00 … +0.01 over A — a cheap check worth running.
+- CareVue→MetaVision transfer and few-shot: this is the plausible win; a smaller relative drop would be a publishable
+  finding even if in-distribution AUROC is equal.
+- The real payoff is condition D: one frozen text encoder handles the vitals summary and the clinical notes, so the
+  multimodal experiment collapses into a single pipeline with ~25× fewer tokens than raw serialisation.
