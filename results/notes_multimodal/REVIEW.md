@@ -218,3 +218,19 @@ Expected outcome: for the fixed-input 28-day prediction the agent should match, 
 are ~1–4 % AUPRC with much larger cohorts); the credible wins are (a) the active-acquisition curve, (b) evidence-grounded
 rationales, (c) smaller transfer drop. Cost: ~15 k cases × (4–8 tool calls, ~3–6 k tokens) — a day of local vLLM time per
 configuration; development ≈ 1–2 weeks.
+
+### 9. Frozen TabPFN as a tabular encoder inside a UTDE-style fusion — feasibility check (W = 24 h, tier 4 + age/sex)
+
+`TabPFNClassifier.get_embeddings(X, data_source)` returns a 192-d representation per row and per ensemble member
+(shape n_estimators × n_rows × 192). Checked on our split (context = train split, 4 estimators):
+- TabPFN itself: test AUROC 0.834.
+- Logistic probe fitted on **query-mode** embeddings of the validation rows → test: 0.829–0.837 per estimator; 5-fold CV probe
+  inside the test embeddings 0.829. The frozen embedding keeps essentially all of TabPFN's signal.
+- Pitfalls: (1) embeddings of rows that are *inside the context* (`data_source='train'`) live in a different space for some
+  estimators (probe train→test 0.73–0.83; naive mean over estimators 0.33) — always embed rows in query mode against a fixed
+  context, and embed training rows with a K-fold context that excludes them; (2) do not average embeddings across estimators
+  (each member permutes features/classes) — keep them per estimator or concatenate; (3) embeddings are deterministic across calls.
+Design that follows: frozen TabPFN embedding (static, per stay) as the tabular branch; UTDE's note encoder (BERT + time
+attention) as the text branch; concatenation or cross-attention + MLP head trained on train rows. Ladder to report:
+TabPFN alone → logistic on frozen embedding → embedding + note branch → full UTDE; and the reverse direction (UTDE embedding
+appended to the TabPFN feature table) as the alternative fusion.
