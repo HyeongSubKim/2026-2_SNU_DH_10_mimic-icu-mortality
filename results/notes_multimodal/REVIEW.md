@@ -115,3 +115,25 @@ a new notes-plus-vitals fusion baseline. For this project: adopt UTDE as the "pu
 hourly series + a list of timed notes, which is what the bundle builder produces), and the Bakumenko-style late fusion as the simple
 strong baseline — which is the design proposed in §2. Numbers from these papers are not transferable (48 h window, in-hospital
 death, ~21 k unselected stays vs our 6 / 24 h, 28-day death, SOFA-selected cohort); only the architectures are.
+
+### Field trends at top-tier venues (2023–2026), for context
+
+1. **Structured-EHR foundation models (event-stream / "patient timeline" pretraining)** — CLMBR-T-base + EHRSHOT (NeurIPS 2023 D&B),
+   MOTOR time-to-event FM (ICLR 2024), Context Clues long-context FMs, Mamba 16k tokens (ICLR 2025), ETHOS zero-shot trajectory
+   (npj Digit Med 2024), CEHR-GPT, "Generative medical event models improve with scale" (2025). Pretrain on millions of patients'
+   coded events, few-shot / zero-shot downstream. Mostly structured codes; notes enter late.
+2. **Benchmarks and data standards** — YAIB (ICLR 2024; dataset/cohort/preprocessing matter more than model class), MEDS + MEDS-DEV
+   (decentralised, reproducible), DiReCT (MIMIC-IV multimodal), EHRSHOT. The 48 h in-hospital-mortality Harutyunyan task is being
+   replaced by MIMIC-IV / multi-centre, many-task suites.
+3. **LLM + time series** — time series as a native LLM modality: OpenTSLM (ICML 2026), "Portable representations for clinical time
+   series with LLMs" (ICLR 2026: frozen LLM summarises the series into text, frozen text encoder embeds it), MILM, TRACE, LLM4EHR;
+   instruction-tuned LLMs on notes + features (Ben Cheikh Larbi 2025). Emphasis on zero-/few-shot, cross-cohort portability and
+   reasoning traces rather than a new fusion layer.
+4. **Multimodal FMs** — autoregressive EHR FMs conditioned on ECG / CXR / notes via latent compression + gated cross-attention
+   (2026 preprint); DiReCT reports that adding modalities does not automatically help ICU mortality.
+5. **Where notes + vitals fusion sits now** — UTDE (ICML 2023) remains the reference architecture; newer fusion papers appear at
+   KDD / CIKM / ML4H / AMIA (FlexCare, EMERGE, King 2023) rather than NeurIPS / ICLR / ICML.
+
+Implication for this project: a novel fusion architecture is not where the field's attention is; a careful clinical question
+(SOFA cohort, 6 h vs 24 h, 28-day death, lactate / BE, leak-safe note timing, matched-alarm-burden operating points) with strong
+simple models (XGBoost, TabPFN, late fusion) and one published architecture (UTDE) as comparison is the defensible design.
