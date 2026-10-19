@@ -238,3 +238,52 @@ N01–N50 dictionary (median 8 term tokens per note, in addition to [CLS]; `--te
 changes nothing: UTDE 0.843 vs 0.844 (Δ −0.000 [−0.010, +0.010]), fused with TabPFN 0.857 vs 0.860 (Δ −0.003
 [−0.009, +0.004]); the two models' test probabilities correlate at 0.93. The encoder already attends to these terms
 when they matter; the dictionary's value is as interpretable features (+0.01) and as a prompt schema, not as an attention prior.
+
+### Record2Vec (ICLR 2026) on the same cohort (`16_`–`19_record2vec_*.py`)
+
+Record2Vec recipe: first-W-hour irregular record → canonical text serialisation (21 channels, raw units, hourly values) →
+frozen LLM summary (Qwen2.5-7B-Instruct, local vLLM, temperature 0; two prompts: free narrative / organ-system schema; a third
+prompt adds the notes available in the window = condition D) → frozen text embedder (Qwen3-Embedding-0.6B / **4B**, GatorTron-base)
+→ logistic regression (C chosen on the validation split) or TabPFN on 32 PCs. Same cohort, split and label as above;
+paired bootstrap vs structured TabPFN (A). Test AUROC (AUPRC), Qwen3-Embedding-4B unless stated:
+
+| condition | 6 h | Δ vs A | 24 h | Δ vs A |
+|---|---|---|---|---|
+| A structured TabPFN (tier 4 + age/sex) | 0.832 (0.681) | – | 0.837 (0.673) | – |
+| B0 raw serialisation → embedding → LR (no summary) | 0.757 (0.551) | −0.075 [−0.100, −0.050] | 0.760 (0.541) | −0.078 [−0.102, −0.054] |
+| B narrative summary → embedding → LR | 0.744 (0.542) | −0.088 [−0.121, −0.056] | 0.699 (0.474) | −0.138 [−0.165, −0.111] |
+| B schema summary → embedding → LR | 0.728 (0.530) | −0.105 [−0.137, −0.072] | 0.736 (0.508) | −0.101 [−0.127, −0.075] |
+| C hybrid: structured + 32 PCs of the narrative embedding → TabPFN | 0.826 (0.675) | −0.005 [−0.014, +0.004] | 0.831 (0.663) | −0.006 [−0.010, −0.002] |
+| F late fusion TabPFN + B0 LR | 0.826 (0.668) | −0.005 [−0.012, +0.001] | 0.835 (0.668) | −0.002 [−0.009, +0.005] |
+| D summary of record + notes → embedding → LR | 0.763 (0.543) | −0.069 [−0.103, −0.037] | 0.798 (0.594) | −0.039 [−0.062, −0.017] |
+| F late fusion TabPFN + D LR | 0.828 (0.664) | −0.004 [−0.023, +0.014] | 0.842 (0.672) | +0.004 [−0.008, +0.016] |
+
+Other embedders give the same ordering: narrative-summary LR 0.731 / 0.692 (0.6B) and 0.732 / 0.704 (GatorTron) at 6 / 24 h;
+condition D is where the clinical embedder helps most: GatorTron D 0.768 / 0.807 at 6 / 24 h, fused with TabPFN
+0.834 / 0.847 (+0.002 / +0.010 [−0.002, +0.022]) — the best text-path numbers, still short of UTDE fusion (0.845 / 0.860).
+
+Label efficiency and pseudo-site transfer (`19_record2vec_transfer.py`, 4B embedder, LR C = 10; test AUROC, mean ± sd over 5 draws):
+
+| representation | n = 16 | 64 | 256 | 1024 | all | CareVue→MetaVision | in-domain | MetaVision→CareVue | in-domain |
+|---|---|---|---|---|---|---|---|---|---|
+| 6 h structured (TabPFN) | 0.631 ± 0.042 | 0.696 ± 0.031 | 0.761 ± 0.016 | 0.803 ± 0.009 | 0.829 | 0.826 | 0.832 | 0.813 | 0.814 |
+| 6 h raw-text embedding (LR) | 0.648 ± 0.038 | 0.693 ± 0.023 | 0.710 ± 0.011 | 0.743 ± 0.005 | 0.760 | 0.764 | 0.764 | 0.737 | 0.759 |
+| 6 h narrative-summary embedding (LR) | 0.597 ± 0.053 | 0.649 ± 0.012 | 0.686 ± 0.020 | 0.718 ± 0.004 | 0.748 | 0.745 | 0.726 | 0.738 | 0.739 |
+| 24 h structured (TabPFN) | 0.609 ± 0.094 | 0.710 ± 0.025 | 0.754 ± 0.010 | 0.809 ± 0.012 | 0.834 | 0.833 | 0.837 | 0.825 | 0.828 |
+| 24 h raw-text embedding (LR) | 0.534 ± 0.065 | 0.602 ± 0.057 | 0.661 ± 0.014 | 0.708 ± 0.010 | 0.736 | 0.742 | 0.755 | 0.732 | 0.750 |
+| 24 h narrative-summary embedding (LR) | 0.526 ± 0.075 | 0.589 ± 0.040 | 0.619 ± 0.014 | 0.655 ± 0.005 | 0.704 | 0.723 | 0.709 | 0.681 | 0.680 |
+
+Reading: (i) the LLM-text representation trails the clinician-curated structured features by 0.08–0.14 AUROC, and adds
+nothing on top of them (hybrid and late fusion are 0 or slightly negative); (ii) the summarisation step *loses* information
+relative to embedding the raw serialisation (best summary prompt: 6 h −0.013, 24 h −0.024); prompt style matters as much
+as the summariser (narrative 0.744 / 0.699 vs schema 0.728 / 0.736 at 6 / 24 h — the schema keeps more numbers, which pays
+off on the longer record, but its template dominates the embedding on the short one); (iii) the paper's
+two selling points do not appear here: with 16 labels the structured TabPFN is already as good as or better than the
+embedding probes, and the CareVue→MetaVision drop is ≤ 0.01 for both representations, so there is no shift for the text
+path to be robust to. Adding the notes to the summariser's input (D) is the one thing that
+moves the text path (+0.02 / +0.06–0.10 over record-only summaries at 6 / 24 h), i.e. the notes carry information the vitals
+do not, but a summary→embedding compression of them buys +0.004…+0.010 (ns) in fusion where UTDE's learned note encoder buys
++0.023. Summary quality is not the cause — 96 % (narrative) / 99.5 % (schema) of the numbers quoted in the
+summaries occur in the source record (2,000-stay check). Caveats: 7B summariser and ≤ 4B embedder (the paper used Gemini-2.0
+Flash and trained downstream heads on 10× more stays); single summarisation run (temperature 0); numeric precision is the
+likely bottleneck for a text embedding of a 21-channel record.

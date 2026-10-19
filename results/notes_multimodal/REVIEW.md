@@ -242,3 +242,21 @@ Test: 6 h — TabPFN 0.832, UTDE 0.798, fusion 0.845 (+0.014 vs TabPFN [−0.002
 fusion 0.860 (+0.023 [+0.011, +0.035]). Stacker weights ≈ equal (0.41 / 0.43 at 24 h), i.e. the two models carry
 different information. Compute: ~4.5 h (24 h) / ~5.5 h (6 h) on one A6000 (shared). Artefacts: ../MultimodalMIMIC/run/sofa28_W{6,24},
 results/late_fusion/. Next: Record2Vec (Stage 2) plugged into the same fusion table.
+
+### 11. Stage 3 result: Record2Vec on the SOFA cohort (done; details in README)
+
+Run as planned in §7 (local Qwen2.5-7B-Instruct summariser, Qwen3-Embedding-0.6B / 4B and GatorTron embedders, LR / TabPFN
+heads, conditions A / B0 / B (two prompts) / C / F / D, few-shot 16–1024, CareVue↔MetaVision transfer). Outcome against the
+pre-stated expectations:
+- In-distribution: worse than expected — Record2Vec summary embedding 0.744 / 0.699 (6 / 24 h) vs structured TabPFN
+  0.832 / 0.837; the prediction was −0.01…−0.03, the result is −0.09…−0.14. Raw-serialisation embedding (0.76) beats the
+  summary, consistent with the paper's own ablation ("raw often best in-distribution").
+- Hybrid C / late fusion F: 0 or slightly negative (predicted +0.00…+0.01) — the text path carries no information the
+  structured features lack.
+- Transfer and few-shot: no win. The structured model drops ≤ 0.01 across charting eras, so the shift the method is meant
+  to absorb is absent in MIMIC-III; in the 16-label regime TabPFN already matches the probes.
+- Condition D (record + notes through one summariser): 0.763 / 0.798 (4B) and 0.768 / 0.807 (GatorTron) at 6 / 24 h — the notes
+  add 0.02–0.10 over record-only summaries, but fusion with TabPFN gives only +0.002 / +0.010 (ns) vs +0.014 / +0.023 for UTDE.
+Decision: Record2Vec is a negative result on this cohort; keep TabPFN + UTDE late fusion (0.845 / 0.860) as the Stage 1–2
+reference and treat the LLM-text path as a candidate for the agent stage (§8) only where it adds information the
+structured features do not have (notes), not as a replacement representation for the vitals.

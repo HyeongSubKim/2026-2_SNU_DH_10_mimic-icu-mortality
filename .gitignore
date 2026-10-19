@@ -14,3 +14,7 @@ results/**/*.json
 __pycache__/
 *.pyc
 .venv/
+results/**/*.jsonl
+results/**/*.npy
+!results/**/transfer_*.json
+logs/
