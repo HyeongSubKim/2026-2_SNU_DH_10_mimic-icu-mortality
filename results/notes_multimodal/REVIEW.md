@@ -257,6 +257,48 @@ pre-stated expectations:
   to absorb is absent in MIMIC-III; in the 16-label regime TabPFN already matches the probes.
 - Condition D (record + notes through one summariser): 0.763 / 0.798 (4B) and 0.768 / 0.807 (GatorTron) at 6 / 24 h — the notes
   add 0.02–0.10 over record-only summaries, but fusion with TabPFN gives only +0.002 / +0.010 (ns) vs +0.014 / +0.023 for UTDE.
+- Term dictionary in the text path: a prompt-level checklist (D①) lifts the 24 h text model to 0.816 / fusion 0.849 (+0.012, ns),
+  the best Record2Vec variant; filtering the notes down to dictionary sentences (D②) costs 0.02–0.04 — same lesson as the UTDE
+  attention ablation: the terms are a completeness checklist, not a focus restriction.
 Decision: Record2Vec is a negative result on this cohort; keep TabPFN + UTDE late fusion (0.845 / 0.860) as the Stage 1–2
 reference and treat the LLM-text path as a candidate for the agent stage (§8) only where it adds information the
 structured features do not have (notes), not as a replacement representation for the vitals.
+
+### 12. Stage 3 experiment plan — agent-based prediction on the SOFA cohort (proposal, informed by §10–11)
+
+What Stages 1–2 established, and what it implies for the agent design:
+- The clinician-curated structured features + TabPFN/XGB are the strongest single representation (0.832 / 0.837) and an LLM
+  text representation of the vitals cannot replace them (−0.08 … −0.14) → the agent must **call the structured model as a
+  tool**, not re-derive risk from text.
+- Notes carry information the vitals lack (UTDE fusion +0.023 at 24 h; note-concept dictionary +0.010; Record2Vec-D
+  +0.06–0.10 over vitals-only text), but compressing them (summary → embedding) loses most of it → the agent's note access
+  should be **question-driven retrieval** over the raw notes (ask "is there a goals-of-care / arrest / shock statement?"),
+  not a one-shot summary.
+- Term attention / term prompts change nothing when the model already sees the whole note → the dictionary's role in the
+  agent is as a **checklist of questions**, not as an attention prior.
+- There is no CareVue→MetaVision shift to exploit (≤ 0.01 drop) → transfer is not a selling point on MIMIC-III; the agent's
+  credible wins are (a) choosing what to look at (active acquisition), (b) integrating heterogeneous evidence per case,
+  (c) auditable rationales.
+
+Experiments (all: same cohort / split / 28-day label; W = 6 and 24 h; test n = 853 / 1,374; paired bootstrap vs TabPFN):
+
+| # | experiment | question | design | primary metric | decision gate |
+|---|---|---|---|---|---|
+| E0 | Tool layer + harness | can every tool be time-gated and logged? | tools: `risk_model(TabPFN prob + SHAP top-5)`, `sofa()/lactate()/be()`, `vitals_trend(channel)`, `note_search(query, k)` (BM25 + concept regex over notes with STORETIME ≤ INTIME + W; L01 terms masked), `order_test(name)` (returns value only if measured in window), `calculator(apache/saps)` | leakage audit: 0 post-window values in 100 traced cases | must pass before E1 |
+| E1 | Agency ablation | is the ReAct loop worth more than one prompt? | (i) zero-shot on serialised window (have: 0.65 on ClinicRealm notes), (ii) tool-augmented single prompt (all tool outputs pasted once), (iii) ReAct agent, ≤ 8 steps, deterministic decoding, 3 repeats per case | AUROC / AUPRC; Δ(iii − ii) = value of deciding what to look at; action-sequence agreement across repeats | if (iii) ≤ (ii) on both windows → drop the loop, keep (ii) as "LLM integrator" |
+| E2 | Agent vs best ML | does the agent beat TabPFN + UTDE fusion (0.845 / 0.860)? | agent of E1(iii); plus stacker of agent probability with TabPFN and UTDE (fit on val, as `14_late_fusion.py`) | paired ΔAUROC vs TabPFN and vs fusion; calibration slope / Brier; matched-alarm sensitivity (table B) | report regardless; expected: agent ≈ TabPFN, agent-in-stack +0.00…+0.01 |
+| E3 | Active acquisition (the bet) | can choosing tests beat a fixed-input model? | hide lactate / BE / bilirubin / platelets / GCS at hour W; agent may `order_test` ≤ k ∈ {0,1,2,3}; compare to TabPFN with (a) nothing hidden, (b) all hidden, (c) random k tests, (d) greedy SHAP-ranked k tests | AUROC vs number of tests ordered (value-of-information curve); tests ordered per case; share of orders that return "not measured" | agent curve above random and SHAP-greedy at k = 1–2 = positive result; else negative |
+| E4 | Note interrogation | does question-driven note reading recover UTDE's note gain? | agent restricted to `note_search` + `risk_model`; checklist = N01–N50 as candidate queries; output: evidence table (concept, quote, note time) + probability | Δ vs TabPFN; vs UTDE fusion; precision of quoted evidence on 100 audited cases | ≥ +0.015 at 24 h with ≥ 90 % evidence precision → notes path worth keeping |
+| E5 | Multi-agent (optional) | ColaCare-style DoctorAgents (vitals / labs / notes) + MetaAgent | only if E1(iii) > E1(ii) | same as E2; cost per case | skip if E1 negative |
+
+Models and cost: Qwen2.5-7B-Instruct / Qwen3-32B (local vLLM) as the agent LLM, gpt-oss-120b when two GPUs are free;
+≈ 15 k cases × 3 repeats × ~5 tool calls × ~4 k tokens ≈ 1 B tokens ≈ 1–2 days of vLLM per configuration at 7B, so
+E1–E2 on the **test split only** (2,227 cases) for the ablation, full train/val only where a stacker is fitted.
+Implementation: LangGraph (or a plain ReAct loop) over the existing scripts — `09`/`10` (risk model, SHAP), `12`/`13`
+(note text, STORETIME gating), `15` (concept regex), `16` (serialisation); tool calls logged to JSONL for the audit.
+Timeline: E0 2–3 days, E1–E2 1 week, E3 1 week, E4 3–4 days; total ≈ 3–4 weeks of wall-clock with the GPUs shared.
+
+Pre-registered expectations: E1(iii) − E1(ii) ≈ 0 for the fixed-input task; E2 agent ≈ TabPFN (−0.02 … +0.01), stack
++0.00 … +0.01; E3 is the only place a clear win is plausible (k = 1–2 tests recovering most of the all-tests AUROC);
+E4 ≈ +0.01 with usable rationales. A negative E1/E2 with a positive E3/E4 is still a publishable story: "agency pays when
+the model can choose its inputs or must cite evidence, not when the inputs are fixed".

@@ -257,6 +257,10 @@ paired bootstrap vs structured TabPFN (A). Test AUROC (AUPRC), Qwen3-Embedding-4
 | F late fusion TabPFN + B0 LR | 0.826 (0.668) | −0.005 [−0.012, +0.001] | 0.835 (0.668) | −0.002 [−0.009, +0.005] |
 | D summary of record + notes → embedding → LR | 0.763 (0.543) | −0.069 [−0.103, −0.037] | 0.798 (0.594) | −0.039 [−0.062, −0.017] |
 | F late fusion TabPFN + D LR | 0.828 (0.664) | −0.004 [−0.023, +0.014] | 0.842 (0.672) | +0.004 [−0.008, +0.016] |
+| D① term-guided prompt (N01–N50 categories must be covered; raw notes) → LR | 0.787 (0.603) | −0.045 [−0.078, −0.015] | 0.816 (0.625) | −0.021 [−0.044, +0.002] |
+| F late fusion TabPFN + D① LR | 0.835 (0.688) | +0.003 [−0.015, +0.019] | 0.849 (0.703) | +0.012 [−0.001, +0.025] |
+| D② term-filtered notes (only sentences matching N01–N50, L01 dropped) → LR | 0.767 (0.589) | −0.065 [−0.096, −0.034] | 0.775 (0.547) | −0.062 [−0.086, −0.039] |
+| F late fusion TabPFN + D② LR | 0.831 (0.691) | −0.000 [−0.014, +0.013] | 0.837 (0.676) | −0.000 [−0.010, +0.009] |
 
 Other embedders give the same ordering: narrative-summary LR 0.731 / 0.692 (0.6B) and 0.732 / 0.704 (GatorTron) at 6 / 24 h;
 condition D is where the clinical embedder helps most: GatorTron D 0.768 / 0.807 at 6 / 24 h, fused with TabPFN
@@ -283,7 +287,12 @@ embedding probes, and the CareVue→MetaVision drop is ≤ 0.01 for both represe
 path to be robust to. Adding the notes to the summariser's input (D) is the one thing that
 moves the text path (+0.02 / +0.06–0.10 over record-only summaries at 6 / 24 h), i.e. the notes carry information the vitals
 do not, but a summary→embedding compression of them buys +0.004…+0.010 (ns) in fusion where UTDE's learned note encoder buys
-+0.023. Summary quality is not the cause — 96 % (narrative) / 99.5 % (schema) of the numbers quoted in the
++0.023. **Term dictionary in the text path (D①/D②).** Listing the N01–N50 categories in the summariser's prompt (the summary must
+cover every category present) is the best Record2Vec variant at 24 h (0.816 alone, fusion 0.849, +0.012 [−0.001, +0.025])
+and neutral at 6 h; restricting the notes to the sentences that match the dictionary (median 3,262 → 465 characters) is
+clearly harmful (−0.02 … −0.04 vs raw notes): context outside the dictionary carries signal, which is the same lesson as
+the UTDE term-attention ablation — the dictionary works as a "do not omit" checklist, not as a focus restriction.
+Summary quality is not the cause — 96 % (narrative) / 99.5 % (schema) of the numbers quoted in the
 summaries occur in the source record (2,000-stay check). Caveats: 7B summariser and ≤ 4B embedder (the paper used Gemini-2.0
 Flash and trained downstream heads on 10× more stays); single summarisation run (temperature 0); numeric precision is the
 likely bottleneck for a text embedding of a 21-channel record.

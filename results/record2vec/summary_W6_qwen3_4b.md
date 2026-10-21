@@ -19,3 +19,11 @@
 | D_notes_tabpfn_pca32 | 0.727 | 0.523 | -0.104 [-0.138, -0.071] |
 | C_D_notes_tabpfn_struct+pca32 | 0.820 | 0.666 | -0.012 [-0.025, +0.000] |
 | F_tabpfn+D_notes_lr | 0.828 | 0.664 | -0.004 [-0.023, +0.014] |
+| D_termprompt_lr | 0.787 | 0.603 | -0.045 [-0.078, -0.015] |
+| D_termprompt_tabpfn_pca32 | 0.759 | 0.561 | -0.073 [-0.106, -0.041] |
+| C_D_termprompt_tabpfn_struct+pca32 | 0.833 | 0.688 | +0.001 [-0.011, +0.012] |
+| F_tabpfn+D_termprompt_lr | 0.835 | 0.688 | +0.003 [-0.015, +0.019] |
+| D_termfilt_lr | 0.767 | 0.589 | -0.065 [-0.096, -0.034] |
+| D_termfilt_tabpfn_pca32 | 0.746 | 0.545 | -0.086 [-0.119, -0.053] |
+| C_D_termfilt_tabpfn_struct+pca32 | 0.834 | 0.679 | +0.002 [-0.008, +0.012] |
+| F_tabpfn+D_termfilt_lr | 0.831 | 0.691 | -0.000 [-0.014, +0.013] |

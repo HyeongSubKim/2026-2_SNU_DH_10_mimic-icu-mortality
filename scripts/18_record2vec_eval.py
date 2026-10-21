@@ -105,7 +105,7 @@ def main():
     Xs_f = np.where(np.isnan(Xs), np.nanmedian(Xs[tr], axis=0), Xs)
 
     texts = {'raw': ser.text.to_dict()}
-    for style in ('narrative', 'structured', 'notes'):
+    for style in ('narrative', 'structured', 'notes', 'notes_termprompt', 'notes_termfilt'):
         p = OUT / f'summ_W{W}_{style}.jsonl'
         if p.exists():
             d = {json.loads(l)['ICUSTAY_ID']: json.loads(l)['summary'] for l in open(p)}
@@ -128,7 +128,7 @@ def main():
             E = embed([tdict[i] for i in ids], args.embedder, args.device); np.save(cache, E)
         if args.embed_only:
             continue
-        cond = {'raw': 'B0', 'narrative': 'B_narr', 'structured': 'B_struct', 'notes': 'D_notes'}[text_name]
+        cond = {'raw': 'B0', 'narrative': 'B_narr', 'structured': 'B_struct', 'notes': 'D_notes', 'notes_termprompt': 'D_termprompt', 'notes_termfilt': 'D_termfilt'}[text_name]
         p_lr, C = lr_fit_predict(E[tr], y[tr], E[va], y[va], E[te]); preds[f'{cond}_lr'] = p_lr
         pca = PCA(n_components=args.pcs, random_state=0).fit(E[tr]); Z = pca.transform(E)
         preds[f'{cond}_tabpfn_pca{args.pcs}'] = tabpfn_fit_predict(Z[tr], y[tr], Z[te], args.device)

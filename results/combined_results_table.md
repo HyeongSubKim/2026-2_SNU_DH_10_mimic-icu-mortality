@@ -19,6 +19,10 @@ AUROC (AUPRC); Δ = paired-bootstrap ΔAUROC vs TabPFN v2 (tier 4 + age/sex) [95
 | 2 | Record2Vec D: LLM summary of record + notes → GatorTron → LR | Multimodal (unified text) | 0.768 (.575) | −0.064 [−0.096, −0.031] | 0.807 (.624) | −0.030 [−0.053, −0.007] |
 | 2 | Hybrid TabPFN (structured + 32 PCs of D embedding, GatorTron) | Multimodal | 0.832 (.681) | +0.000 [−0.009, +0.009] | 0.840 (.677) | +0.003 [−0.003, +0.009] |
 | 2 | Late fusion TabPFN + Record2Vec D (GatorTron) | Multimodal | 0.834 (.688) | +0.002 [−0.013, +0.017] | 0.847 (.696) | +0.010 [−0.002, +0.022] |
+| 2 | Record2Vec D①: term-guided prompt (N01–N50 checklist, raw notes) → Qwen3-Emb-4B → LR | Multimodal (unified text) | 0.787 (.603) | −0.045 [−0.078, −0.015] | 0.816 (.625) | −0.021 [−0.044, +0.002] |
+| 2 | Late fusion TabPFN + Record2Vec D① | Multimodal | 0.835 (.688) | +0.003 [−0.015, +0.019] | 0.849 (.703) | +0.012 [−0.001, +0.025] |
+| 2 | Record2Vec D②: term-filtered notes (dictionary sentences only) → Qwen3-Emb-4B → LR | Multimodal (unified text) | 0.767 (.589) | −0.065 [−0.096, −0.034] | 0.775 (.547) | −0.062 [−0.086, −0.039] |
+| 2 | Late fusion TabPFN + Record2Vec D② | Multimodal | 0.831 (.691) | −0.000 [−0.014, +0.013] | 0.837 (.676) | −0.000 [−0.010, +0.009] |
 
 † Δ vs XGBoost structured (same features, `15_note_concepts.py`), not vs TabPFN.
 ‡ point difference only; the paired CI was computed against the un-modified UTDE / fusion run: −0.000 [−0.010, +0.010] and −0.003 [−0.009, +0.004].

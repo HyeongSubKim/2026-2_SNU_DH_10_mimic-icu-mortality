@@ -5,6 +5,8 @@ Prompt styles
   structured  per-organ-system assessment (respiratory / coagulation / liver / cardiovascular / CNS / renal / metabolic),
               trajectory, and an overall impression -- same information, fixed schema
   notes       narrative prompt + the last <=3 clinical notes available in the window (UTDE pickles) -> unified text (condition D)
+  notes_termprompt   as `notes`, but the prompt lists the N01-N50 concept categories and asks the summary to cover every one present
+  notes_termfilt     as `notes_termprompt`, with the notes reduced to the sentences that match the N01-N50 dictionary (L01 sentences dropped)
 Temperature 0, one call per stay; results cached per line in results/record2vec/summ_W{W}_{style}.jsonl (resumable).
 Usage: VLLM_BASE_URL=http://localhost:8011/v1 python scripts/17_record2vec_summarize.py --window 24 --style narrative structured
 """
@@ -39,14 +41,37 @@ NOTES = ('Below are the measurements from the first {W} hours of an ICU stay, fo
          'Write a concise clinical summary (4-8 sentences): reason for admission and relevant history (from the notes), current '
          'physiological state and organ dysfunction (from the measurements and notes), and whether the trajectory is stable, improving '
          'or worsening. Mention the most abnormal values with their numbers.\n\n{rec}\n\nCLINICAL NOTES:\n{notes}')
-PROMPTS = {'narrative': NARRATIVE, 'structured': STRUCTURED, 'notes': NOTES}
+TERMS = ('Below are the measurements from the first {W} hours of an ICU stay, followed by clinical notes (or note excerpts) written in that window. '
+         'Write a concise clinical summary (4-8 sentences). It must cover, for every category below that is present in the data, what the notes '
+         'and measurements say about it; omit categories that are absent. Then state the physiological state and whether the trajectory is stable, '
+         'improving or worsening, quoting the most abnormal values.\nCategories: {cats}\n\n{rec}\n\nCLINICAL NOTES:\n{notes}')
+PROMPTS = {'narrative': NARRATIVE, 'structured': STRUCTURED, 'notes': NOTES, 'notes_termprompt': TERMS, 'notes_termfilt': TERMS}
 
 
-def load_notes(W):
+def concept_tools():
+    # execute only the dictionary / regex part of 15_note_concepts.py (its model imports are not needed here)
+    import re, types
+    src = open(ROOT / 'scripts' / '15_note_concepts.py').read()
+    src = src[src.index('CONCEPTS = {'):src.index('LEAK_PAT = ') + len('LEAK_PAT = compile_terms(LEAK[1])')]
+    m = types.ModuleType('c15'); m.re = re; exec(src, m.__dict__)
+    return m
+
+
+def filter_sentences(text, pats, leak):
+    import re
+    keep = [x.strip() for x in re.split(r'(?<=[.!?\n])\s+', text) if x.strip() and not leak.search(x) and any(p.search(x) for p in pats)]
+    return ' '.join(keep) if keep else '(no sentence in the notes matches the concept list)'
+
+
+def load_notes(W, term_filter=False):
     out = {}
+    if term_filter:
+        c15 = concept_tools(); pats = list(c15.PATTERNS.values()); leak = c15.LEAK_PAT
     for split in ('train', 'val', 'test'):
         for d in pickle.load(open(UTDE / f'W{W}' / f'{split}p2x_data.pkl', 'rb')):
             notes = [t for t in d['text_data'] if t != PLACEHOLDER][-3:]
+            if term_filter:
+                notes = [filter_sentences(t, pats, leak)[:4000] for t in notes]
             out[d['name']] = '\n\n---\n\n'.join(t[:4000] for t in notes) if notes else PLACEHOLDER   # ~1k tokens per note
     return out
 
@@ -61,7 +86,9 @@ def main():
     args = ap.parse_args()
     client = OpenAI(base_url=os.environ.get('VLLM_BASE_URL', 'http://localhost:8011/v1'), api_key='EMPTY')
     ser = pd.read_parquet(OUT / f'serialized_W{args.window}.parquet')
-    notes = load_notes(args.window) if 'notes' in args.style else None
+    cats = ''
+    if any(st.startswith('notes_term') for st in args.style):
+        cats = '; '.join(f'{k} {v[0]}' for k, v in concept_tools().CONCEPTS.items())
 
     def one(sid, prompt):
         from openai import BadRequestError
@@ -77,12 +104,13 @@ def main():
                 'prompt_tokens': r.usage.prompt_tokens, 'completion_tokens': r.usage.completion_tokens}
 
     for style in args.style:
+        notes = load_notes(args.window, term_filter=style == 'notes_termfilt') if style.startswith('notes') else None
         path = OUT / f'summ_W{args.window}_{style}.jsonl'
         done = set()
         if path.exists():                      # keep only complete lines (a killed run may leave a truncated tail)
             lines = [l for l in open(path) if l.endswith('\n')]
             open(path, 'w').writelines(lines); done = {json.loads(l)['ICUSTAY_ID'] for l in lines}
-        todo = [(sid, PROMPTS[style].format(W=args.window, rec=row.text, notes=notes[sid] if notes else ''))
+        todo = [(sid, PROMPTS[style].format(W=args.window, rec=row.text, notes=notes[sid] if notes else '', cats=cats))
                 for sid, row in ser.iterrows() if sid not in done]
         print(f'W={args.window} {style}: {len(done)} cached, {len(todo)} to do', flush=True)
         with open(path, 'a') as f, ThreadPoolExecutor(args.workers) as ex:
