@@ -19,3 +19,6 @@ results/**/*.npy
 !results/**/transfer_*.json
 logs/
 !results/selection_bias/*.json
+results/**/*.npz
+!results/fusion_shap/*.json
+!results/fusion_shap/tabpfn_shap_W*.csv

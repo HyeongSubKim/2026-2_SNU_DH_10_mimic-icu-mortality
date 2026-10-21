@@ -321,3 +321,44 @@ same covariate model scores 0.70 (SOFA-computable) vs 0.76 (not computable) at 2
 0.62 in lactate-tested vs untested stays, i.e. the restriction selects a sicker, more homogeneous population in which
 prediction is if anything harder. Consequence for the study: the models are valid for ICU stays with an arterial gas and
 lactate in the first W h (the population on which all tiers / UTDE / Record2Vec were compared), not for all ICU admissions.
+
+### SHAP / attribution of the best model: late fusion TabPFN + UTDE (`21_fusion_shap.py`, `22_fusion_shap_figs.py`, `../MultimodalMIMIC/utde_attr.py` (copy: `scripts/utde_attr_in_MultimodalMIMIC.py`))
+
+Three levels, all on the test split. Figures in `results/fusion_shap/` (`fusion_beeswarm_W*.png`, `tabpfn_shap_W*.png`, `utde_beeswarm_W*.png`, `utde_attr_W*.png`).
+
+**1. Fusion stacker (exact SHAP — the stacker is linear in the two logits).**
+
+| W | coef TabPFN / UTDE | mean abs SHAP TabPFN / UTDE | UTDE share | logit corr. | cases where the two disagree | fusion / TabPFN / UTDE AUROC on those |
+|---|---|---|---|---|---|---|
+| 6 h | 0.55 / 0.54 | 0.60 / 0.55 | 48% | 0.67 | 26% | 0.598 / 0.659 / 0.389 |
+| 24 h | 0.41 / 0.43 | 0.53 / 0.74 | 58% | 0.79 | 21% | 0.600 / 0.565 / 0.524 |
+
+The stacker weights the two logits almost equally; the UTDE logit has the larger spread, so it carries 58 % of the fused
+logit at 24 h, while the structured model leads at 6 h (52 %). The gain does not come from arbitrating opposite votes
+(few cases sit on the cancellation diagonal) but from reinforcing the shared direction; where the two disagree the
+fusion is better than either at 24 h and in between at 6 h (UTDE is confidently wrong on part of those at 6 h).
+
+**2. TabPFN (tier 4 + age/sex) — permutation SHAP** (refit reproduces 0.832 / 0.837; all test cases, 853 / 1,374,
+10 background rows, 2F+1 evaluations per case). Mean |SHAP| in probability units, grouped by source variable:
+24 h — GCS 0.147 ≫ age 0.048 ≈ urine 0.046 > lactate 0.041 > MAP 0.035 > FiO2 0.029 ≈ BE 0.028 (single features:
+`gcs_last` 0.111 ≫ `age` 0.048 > `urine_n` ≈ `gcs_count` ≈ `lactate_min` ≈ `lactate_last` ≈ `base_excess_last` 0.02);
+6 h — GCS 0.082 ≈ age 0.071 > FiO2 0.047 ≈ lactate 0.047 ≈ urine 0.046 > BE 0.042 > platelets 0.039 (single: `age` 0.071 ≈
+`gcs_last` 0.069 > `fio2_last` 0.031). Directions are clinical (low GCS, low urine, high lactate, low BE, high FiO2, high
+age → death). Two observations: in the first 6 h prior risk (age) and oxygen requirement weigh as much as GCS, and only
+by 24 h do the physiological trajectories dominate; and measurement-count features (`urine_n`, `gcs_count`,
+`platelets_count`) sit in the top 12 at both windows — the model also learns the charting / testing pattern (cf. the
+selection-bias section), a limitation to state.
+
+**3. UTDE — occlusion attribution** (deep model: a channel's values and masks are zeroed in both inputs; notes are
+replaced by the placeholder note; exact harness, reproduces 0.798 / 0.844).
+
+| W | full | without notes | without time series | top channels by mean abs Δlogit | top channels by AUROC drop |
+|---|---|---|---|---|---|
+| 6 h | 0.798 | 0.786 | 0.621 | GCS 0.355, Temp 0.279, Urine 0.278, RR 0.257, Creatinine 0.178 | GCS 0.030, RR 0.015, Urine 0.013, Bilirubin 0.011 |
+| 24 h | 0.844 | 0.819 | 0.681 | GCS 0.635, Urine 0.469, Lactate 0.354, Temp 0.320, RR 0.257 | GCS 0.038, Temp 0.016, Urine 0.010, Bilirubin 0.007 |
+
+Both components rank GCS, urine output and lactate first, which is why their logits correlate at 0.7–0.8 and the fusion
+gain is bounded (+0.014 / +0.023). What each adds: TabPFN — age/sex and the record-pattern counts (absent from UTDE);
+UTDE — the notes (−0.025 AUROC when removed at 24 h, −0.012 at 6 h) and the temperature / respiratory-rate / heart-rate
+trajectories, which the structured aggregates summarise only as min/max/mean. Easy follow-ups suggested by this: add
+age/sex to the UTDE input, and raise `num_of_notes` (63 % of 24 h stays have more than the 5 notes UTDE keeps).
