@@ -1,0 +1,390 @@
+{
+ "window": 24,
+ "n_adult_alive_at_W": 52251,
+ "died_in_window_removed": 1078,
+ "analyses": {
+  "all adults | lactate recorded": {
+   "crude": {
+    "n1": 30293,
+    "d1": 4791,
+    "p1": 0.15815534942065823,
+    "n0": 21958,
+    "d0": 1897,
+    "p0": 0.08639220329720375,
+    "rd_pp": 7.176314612345449,
+    "rd_ci": [
+     6.62230078817721,
+     7.730328436513687
+    ]
+   },
+   "baseline": {
+    "exposed": {
+     "n": 30293,
+     "age_mean": 63.447443303733536,
+     "male_pct": 56.99996698907338,
+     "emergency_pct": 83.47142904301323,
+     "metavision_pct": 50.88964447232034,
+     "vaso_pct": 34.034265341828146,
+     "vent_pct": 57.1122041395702,
+     "gcs_min_median": 9.0,
+     "map_min_median": 58.0,
+     "creatinine_max_median": 1.1,
+     "sofa_computable_pct": 30.465784174561776,
+     "sofa_total_median_if_computable": 9.0,
+     "y28_pct": 15.815534942065824,
+     "unit_MICU_pct": 41.97999537847028,
+     "unit_SICU_pct": 15.709899976892352,
+     "unit_CCU_pct": 9.398210807777374,
+     "unit_CSRU_pct": 18.482817812696002,
+     "unit_TSICU_pct": 14.429076024163997
+    },
+    "unexposed": {
+     "n": 21958,
+     "age_mean": 63.66846707350397,
+     "male_pct": 55.63803625102468,
+     "emergency_pct": 82.78076327534384,
+     "metavision_pct": 35.10793332726114,
+     "vaso_pct": 15.52964750888059,
+     "vent_pct": 25.043264413881044,
+     "gcs_min_median": 14.0,
+     "map_min_median": 60.0,
+     "creatinine_max_median": 1.0,
+     "sofa_computable_pct": 6.1981965570634845,
+     "sofa_total_median_if_computable": 7.0,
+     "y28_pct": 8.639220329720375,
+     "unit_MICU_pct": 35.87303033063121,
+     "unit_SICU_pct": 17.815830221331634,
+     "unit_CCU_pct": 21.404499499043627,
+     "unit_CSRU_pct": 16.599872483832772,
+     "unit_TSICU_pct": 8.30676746516076
+    }
+   },
+   "adj_or_demo": {
+    "or": 2.1406430966861563,
+    "ci": [
+     2.0175482281119406,
+     2.2712482425653575
+    ],
+    "p": 5.364385101823868e-140
+   },
+   "adj_or_demo_severity": {
+    "or": 1.5304267544365247,
+    "ci": [
+     1.4357992462090383,
+     1.631290764972384
+    ],
+    "p": 5.025547719236186e-39
+   },
+   "ipw_rd_demo": {
+    "rd_pp": 7.596987291676746,
+    "ci": [
+     6.774020582826118,
+     7.986473543966203
+    ]
+   },
+   "ipw_rd_demo_severity": {
+    "rd_pp": 4.351025025361855,
+    "ci": [
+     3.337612401667264,
+     4.976494906730983
+    ]
+   },
+   "discrimination": {
+    "covariate_model_auroc_exposed": 0.7595259640793464,
+    "sofa_score_auroc_exposed": 0.6496725092798081,
+    "sofa_score_n_exposed": 9229,
+    "covariate_model_auroc_unexposed": 0.7553510037821115,
+    "sofa_score_auroc_unexposed": 0.6217495050904978,
+    "sofa_score_n_unexposed": 1361
+   }
+  },
+  "all adults | BE recorded": {
+   "crude": {
+    "n1": 32679,
+    "d1": 5045,
+    "p1": 0.15438048899905138,
+    "n0": 19572,
+    "d0": 1643,
+    "p0": 0.08394645411812794,
+    "rd_pp": 7.043403488092344,
+    "rd_ci": [
+     6.491675245095402,
+     7.595131731089285
+    ]
+   },
+   "baseline": {
+    "exposed": {
+     "n": 32679,
+     "age_mean": 63.801811560941275,
+     "male_pct": 57.746565072370636,
+     "emergency_pct": 78.23984822056978,
+     "metavision_pct": 40.680559380642,
+     "vaso_pct": 37.58988953150341,
+     "vent_pct": 66.34535940512255,
+     "gcs_min_median": 8.0,
+     "map_min_median": 58.0,
+     "creatinine_max_median": 1.0,
+     "sofa_computable_pct": 32.40613237859176,
+     "sofa_total_median_if_computable": 9.0,
+     "y28_pct": 15.438048899905137,
+     "unit_MICU_pct": 34.50227975152239,
+     "unit_SICU_pct": 15.82361761375807,
+     "unit_CCU_pct": 11.814927017350591,
+     "unit_CSRU_pct": 25.484255944184337,
+     "unit_TSICU_pct": 12.374919673184614
+    },
+    "unexposed": {
+     "n": 19572,
+     "age_mean": 63.103729818107496,
+     "male_pct": 54.22542407520948,
+     "emergency_pct": 91.4316370324954,
+     "metavision_pct": 50.22992029429798,
+     "vaso_pct": 7.337012058042101,
+     "vent_pct": 5.717351318209688,
+     "gcs_min_median": 15.0,
+     "map_min_median": 60.666698455810554,
+     "creatinine_max_median": 1.0,
+     "sofa_computable_pct": 0.0,
+     "sofa_total_median_if_computable": NaN,
+     "y28_pct": 8.394645411812794,
+     "unit_MICU_pct": 47.61393827917433,
+     "unit_SICU_pct": 17.8826895565093,
+     "unit_CCU_pct": 18.833026772940936,
+     "unit_CSRU_pct": 4.680155323932148,
+     "unit_TSICU_pct": 10.990190067443287
+    }
+   },
+   "adj_or_demo": {
+    "or": 2.6996744375367943,
+    "ci": [
+     2.539337391879219,
+     2.870135371533278
+    ],
+    "p": 8.612363301423315e-222
+   },
+   "adj_or_demo_severity": {
+    "or": 1.8602369514042587,
+    "ci": [
+     1.7305862024768688,
+     1.9996007771338185
+    ],
+    "p": 1.250023886893433e-63
+   },
+   "ipw_rd_demo": {
+    "rd_pp": 8.974060099819384,
+    "ci": [
+     8.424445713865481,
+     9.59394662391551
+    ]
+   },
+   "ipw_rd_demo_severity": {
+    "rd_pp": 3.9258466475081812,
+    "ci": [
+     2.799923707853377,
+     5.006157992209983
+    ]
+   },
+   "discrimination": {
+    "covariate_model_auroc_exposed": 0.7704297147741475,
+    "sofa_score_auroc_exposed": 0.6490466612574234,
+    "sofa_score_n_exposed": 10590,
+    "covariate_model_auroc_unexposed": 0.7192914099311345,
+    "sofa_score_auroc_unexposed": null,
+    "sofa_score_n_unexposed": 0
+   }
+  },
+  "all adults | SOFA computable": {
+   "crude": {
+    "n1": 10590,
+    "d1": 2537,
+    "p1": 0.2395656279508971,
+    "n0": 41661,
+    "d0": 4151,
+    "p0": 0.09963755070689614,
+    "rd_pp": 13.992807724400095,
+    "rd_ci": [
+     13.130501721505203,
+     14.855113727294986
+    ]
+   },
+   "baseline": {
+    "exposed": {
+     "n": 10590,
+     "age_mean": 62.83312559017942,
+     "male_pct": 58.17752596789424,
+     "emergency_pct": 89.12181303116147,
+     "metavision_pct": 44.06987724268178,
+     "vaso_pct": 41.74693106704438,
+     "vent_pct": 85.48630783758261,
+     "gcs_min_median": 7.0,
+     "map_min_median": 57.0,
+     "creatinine_max_median": 1.2,
+     "sofa_computable_pct": 100.0,
+     "sofa_total_median_if_computable": 9.0,
+     "y28_pct": 23.95656279508971,
+     "unit_MICU_pct": 46.355051935788474,
+     "unit_SICU_pct": 18.10198300283286,
+     "unit_CCU_pct": 12.99338999055713,
+     "unit_CSRU_pct": 11.728045325779037,
+     "unit_TSICU_pct": 10.821529745042493
+    },
+    "unexposed": {
+     "n": 41661,
+     "age_mean": 63.72009313266604,
+     "male_pct": 55.982813662658124,
+     "emergency_pct": 81.6711072705888,
+     "metavision_pct": 44.30522551066945,
+     "vaso_pct": 22.320635606442476,
+     "vent_pct": 32.997287631117835,
+     "gcs_min_median": 14.0,
+     "map_min_median": 59.0,
+     "creatinine_max_median": 1.0,
+     "sofa_computable_pct": 0.0,
+     "sofa_total_median_if_computable": NaN,
+     "y28_pct": 9.963755070689615,
+     "unit_MICU_pct": 37.649120280358126,
+     "unit_SICU_pct": 16.211804805453543,
+     "unit_CCU_pct": 14.812414488370418,
+     "unit_CSRU_pct": 19.207412208060294,
+     "unit_TSICU_pct": 12.119248217757615
+    }
+   },
+   "adj_or_demo": {
+    "or": 2.796467182977888,
+    "ci": [
+     2.6403889848554125,
+     2.9617714474371364
+    ],
+    "p": 7.967500250717654e-270
+   },
+   "adj_or_demo_severity": {
+    "or": 1.8679167923854147,
+    "ci": [
+     1.7416218835450328,
+     2.003370063410896
+    ],
+    "p": 1.6201247111903572e-68
+   },
+   "ipw_rd_demo": {
+    "rd_pp": 12.63341124463282,
+    "ci": [
+     12.043800441869598,
+     13.204938900735723
+    ]
+   },
+   "ipw_rd_demo_severity": {
+    "rd_pp": 7.926850985344655,
+    "ci": [
+     5.853623970656462,
+     9.202120505132209
+    ]
+   },
+   "discrimination": {
+    "covariate_model_auroc_exposed": 0.7015724421005707,
+    "sofa_score_auroc_exposed": 0.6490466612574234,
+    "sofa_score_n_exposed": 10590,
+    "covariate_model_auroc_unexposed": 0.7601633333257265,
+    "sofa_score_auroc_unexposed": null,
+    "sofa_score_n_unexposed": 0
+   }
+  },
+  "SOFA-computable | lactate recorded": {
+   "crude": {
+    "n1": 9229,
+    "d1": 2281,
+    "p1": 0.24715570484342833,
+    "n0": 1361,
+    "d0": 256,
+    "p0": 0.1880969875091844,
+    "rd_pp": 5.905871733424392,
+    "rd_ci": [
+     3.650845376419065,
+     8.160898090429718
+    ]
+   },
+   "baseline": {
+    "exposed": {
+     "n": 9229,
+     "age_mean": 62.95570484342832,
+     "male_pct": 58.4245313685123,
+     "emergency_pct": 89.32712103153105,
+     "metavision_pct": 46.83064253982013,
+     "vaso_pct": 44.6310542854047,
+     "vent_pct": 86.46657275977896,
+     "gcs_min_median": 6.0,
+     "map_min_median": 56.666698455810554,
+     "creatinine_max_median": 1.3,
+     "sofa_computable_pct": 100.0,
+     "sofa_total_median_if_computable": 9.0,
+     "y28_pct": 24.715570484342834,
+     "unit_MICU_pct": 46.592263517174125,
+     "unit_SICU_pct": 18.441868024704736,
+     "unit_CCU_pct": 11.886444901939539,
+     "unit_CSRU_pct": 11.691407519774623,
+     "unit_TSICU_pct": 11.388016036406977
+    },
+    "unexposed": {
+     "n": 1361,
+     "age_mean": 62.00191036002939,
+     "male_pct": 56.502571638501095,
+     "emergency_pct": 87.72961058045556,
+     "metavision_pct": 25.349008082292436,
+     "vaso_pct": 22.1895664952241,
+     "vent_pct": 78.83908890521674,
+     "gcs_min_median": 8.0,
+     "map_min_median": 60.0,
+     "creatinine_max_median": 1.0,
+     "sofa_computable_pct": 100.0,
+     "sofa_total_median_if_computable": 7.0,
+     "y28_pct": 18.80969875091844,
+     "unit_MICU_pct": 44.74650991917707,
+     "unit_SICU_pct": 15.797207935341662,
+     "unit_CCU_pct": 20.49963262307127,
+     "unit_CSRU_pct": 11.976487876561352,
+     "unit_TSICU_pct": 6.980161645848641
+    }
+   },
+   "adj_or_demo": {
+    "or": 1.4454147568672266,
+    "ci": [
+     1.2446808374669383,
+     1.6785217193681095
+    ],
+    "p": 1.3710480877294291e-06
+   },
+   "adj_or_demo_severity": {
+    "or": 1.2033556996967028,
+    "ci": [
+     1.0327627531273305,
+     1.4021273865731751
+    ],
+    "p": 0.017631519067228967
+   },
+   "ipw_rd_demo": {
+    "rd_pp": 4.019404363058138,
+    "ci": [
+     2.0042485395860803,
+     6.987414389859277
+    ]
+   },
+   "ipw_rd_demo_severity": {
+    "rd_pp": 2.6364511873337326,
+    "ci": [
+     0.1910483375805762,
+     5.2263434949256045
+    ]
+   },
+   "discrimination": {
+    "covariate_model_auroc_exposed": 0.7274759056164839,
+    "sofa_score_auroc_exposed": 0.6496725092798081,
+    "sofa_score_n_exposed": 9229,
+    "covariate_model_auroc_unexposed": 0.556620654396728,
+    "sofa_score_auroc_unexposed": 0.6217495050904978,
+    "sofa_score_n_unexposed": 1361
+   }
+  },
+  "SOFA-computable | BE recorded": {
+   "skipped": "exposed 10590, unexposed 0"
+  }
+ }
+}

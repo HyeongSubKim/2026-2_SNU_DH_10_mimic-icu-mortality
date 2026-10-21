@@ -18,3 +18,4 @@ results/**/*.jsonl
 results/**/*.npy
 !results/**/transfer_*.json
 logs/
+!results/selection_bias/*.json

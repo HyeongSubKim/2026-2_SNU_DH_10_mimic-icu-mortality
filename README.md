@@ -296,3 +296,28 @@ Summary quality is not the cause — 96 % (narrative) / 99.5 % (schema) of the n
 summaries occur in the source record (2,000-stay check). Caveats: 7B summariser and ≤ 4B embedder (the paper used Gemini-2.0
 Flash and trained downstream heads on 10× more stays); single summarisation run (temperature 0); numeric precision is the
 likely bottleneck for a text embedding of a 21-channel record.
+
+### Selection-bias check: tested vs untested stays (`20_selection_bias.py`, reviewer question)
+
+"Does restricting to stays with lactate / BE results select patients who are easier to predict?" — checked on all adult
+ICU stays alive at hour W (landmark), 28-day mortality, with crude risk differences, adjusted ORs (age, sex, unit,
+admission type, era; ‡ + vasopressor and ventilation in the window), stabilised IPW, and discrimination inside each group.
+Full tables: `results/selection_bias/summary_W{6,24}.md`.
+
+| W | exposure (population) | exposed mortality (N) | unexposed mortality (N) | RD pp [95 % CI] | adj. OR † / ‡ | IPW RD pp † / ‡ |
+|---|---|---|---|---|---|---|
+| 6 h | SOFA computable (all adults) | 27.0 % (6,768) | 12.2 % (46,287) | +14.7 [+13.6, +15.8] | 2.50 / 1.58 | +13.8 / +8.5 |
+| 6 h | lactate recorded (all adults) | 17.5 % (27,988) | 10.4 % (25,067) | +7.0 [+6.5, +7.6] | 1.94 / 1.47 | +7.6 / +4.3 |
+| 6 h | lactate recorded (within SOFA-computable) | 27.9 % (5,757) | 21.9 % (1,011) | +6.0 [+3.2, +8.8] | 1.36 / 1.18 | +4.8 / +3.4 |
+| 24 h | SOFA computable (all adults) | 24.0 % (10,590) | 10.0 % (41,661) | +14.0 [+13.1, +14.9] | 2.80 / 1.87 | +12.6 / +7.9 |
+| 24 h | lactate recorded (all adults) | 15.8 % (30,293) | 8.6 % (21,958) | +7.2 [+6.6, +7.7] | 2.14 / 1.53 | +7.6 / +4.4 |
+| 24 h | lactate recorded (within SOFA-computable) | 24.7 % (9,229) | 18.8 % (1,361) | +5.9 [+3.7, +8.2] | 1.45 / 1.20 | +4.0 / +2.6 |
+
+BE is present in every SOFA-computable stay (an arterial gas gives PaO2 and BE together), so it adds no selection beyond
+lactate. The tested groups are sicker (ventilated 57 % vs 25 %, vasopressors 34 % vs 16 %, GCS min 9 vs 14 at 24 h) and
+the SOFA-computable gate — not the lactate gate — is the dominant selection (79 % of adults drop there, mortality ×2.4);
+adjustment halves the differences but does not remove them. Discrimination is *not* higher in the selected group: the
+same covariate model scores 0.70 (SOFA-computable) vs 0.76 (not computable) at 24 h and the SOFA score itself 0.65 vs
+0.62 in lactate-tested vs untested stays, i.e. the restriction selects a sicker, more homogeneous population in which
+prediction is if anything harder. Consequence for the study: the models are valid for ICU stays with an arterial gas and
+lactate in the first W h (the population on which all tiers / UTDE / Record2Vec were compared), not for all ICU admissions.
