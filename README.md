@@ -362,3 +362,7 @@ gain is bounded (+0.014 / +0.023). What each adds: TabPFN — age/sex and the re
 UTDE — the notes (−0.025 AUROC when removed at 24 h, −0.012 at 6 h) and the temperature / respiratory-rate / heart-rate
 trajectories, which the structured aggregates summarise only as min/max/mean. Easy follow-ups suggested by this: add
 age/sex to the UTDE input, and raise `num_of_notes` (63 % of 24 h stays have more than the 5 notes UTDE keeps).
+
+## License
+
+Code in this repository is released under the Apache License 2.0 (see `LICENSE`). MIMIC-III data are not included and remain subject to the PhysioNet Credentialed Health Data Use Agreement; the UTDE reference implementation (XZhang97666/MultimodalMIMIC) is used as an external dependency via the patch in `utde/` and keeps its own terms.
