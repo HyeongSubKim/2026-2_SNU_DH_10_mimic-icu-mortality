@@ -322,7 +322,7 @@ same covariate model scores 0.70 (SOFA-computable) vs 0.76 (not computable) at 2
 prediction is if anything harder. Consequence for the study: the models are valid for ICU stays with an arterial gas and
 lactate in the first W h (the population on which all tiers / UTDE / Record2Vec were compared), not for all ICU admissions.
 
-### SHAP / attribution of the best model: late fusion TabPFN + UTDE (`21_fusion_shap.py`, `22_fusion_shap_figs.py`, `../MultimodalMIMIC/utde_attr.py` (copy: `scripts/utde_attr_in_MultimodalMIMIC.py`))
+### SHAP / attribution of the best model: late fusion TabPFN + UTDE (`21_fusion_shap.py`, `22_fusion_shap_figs.py`, `../MultimodalMIMIC/utde_attr.py` (patch: `utde/MultimodalMIMIC_sofa28.patch`))
 
 Three levels, all on the test split. Figures in `results/fusion_shap/` (`fusion_beeswarm_W*.png`, `tabpfn_shap_W*.png`, `utde_beeswarm_W*.png`, `utde_attr_W*.png`).
 

@@ -1,0 +1,272 @@
+0.9% ns
+a-fib
+acetazolamide
+acute confusion
+acute kidney injury
+acute respiratory distress syndrome
+af
+afib
+aids
+aki
+albumin
+alert
+altered mental status
+anaerobic metabolism
+anasarca
+anoxic brain injury
+ards
+ascites
+aspiration
+aspiration pneumonia
+atrial fibrillation
+awake
+bacteremia
+bedridden
+bicarb bolus
+bicarb drip
+bilateral infiltrates
+biliary drainage
+bleeding
+bmt
+bone marrow transplant
+bowel infarction
+bsi
+c.diff
+c.difficile
+cachexia
+cardiac arrest
+cardiogenic shock
+carrier
+cdad
+cellulitis
+chemotherapy
+chf
+cholangitis
+circulatory collapse
+cirrhosis
+clabsi
+clearing
+coagulopathy
+cold extremities
+colonized
+confused
+confusion
+congestive heart failure
+corrected
+cpr
+crab
+cre
+crrt
+crystalloid
+cva
+cvvh
+cvvhd
+damage control
+decompensation
+decreased consciousness
+decreased oxygen delivery
+defibrillation
+delayed capillary refill
+delirium
+dementia
+despite fluids
+deteriorating
+diabetic ketoacidosis
+diarrhea
+dic
+diet
+disoriented
+disseminated
+disseminated intravascular coagulation
+distributive shock
+dka
+dobutamine
+downtrend
+dysoxia
+ebl
+ecmo
+edema
+edematous
+encephalitis
+enteric fistula
+epinephrine
+esbl
+esrd
+ethylene glycol
+ett
+extubat*
+ffp
+fixed and dilated
+fixed pupils
+fluid bolus
+fluid overload
+fluid resuscitation
+fluid-unresponsive
+frail
+frailty
+gangrenous
+hap
+hcap
+hd
+heart transplant
+hematemesis
+hematologic malignancy
+hemodialysis
+hemodynamic instability
+hemorrhage
+hemorrhagic shock
+herniation
+high-output ileostomy
+hiv
+home o2
+home oxygen
+hyperchloremic
+hypoperfusion
+hypotension
+hypovolemic shock
+hypoxic ischemic
+ich
+immunocompromised
+immunosuppressed
+improving
+influenza
+intracranial hemorrhage
+intubat*
+ischemic bowel
+ischemic colitis
+ketoacidosis
+ketonuria
+kidney transplant
+lactated ringer
+laparotomy
+large volume saline
+lethargic
+leukemia
+levophed
+liver transplant
+low cardiac output
+low ejection fraction
+lr
+lung transplant
+lymphoma
+malnutrition
+malperfusion
+massive pe
+massive pulmonary embolism
+massive transfusion
+mdr
+mdro
+mechanical ventilation
+melena
+meningitis
+mesenteric ischemia
+metastasis
+metastatic
+metastatic cancer
+metformin
+methanol
+milrinone
+mof
+mottled
+mottling
+mrsa
+mtp
+multiorgan failure
+multiple organ failure
+myeloma
+neo
+neutropenia
+neutropenic
+ng suction
+no gag
+norepinephrine
+normal saline
+normalized
+not improving
+nursing home
+obstructive shock
+obtunded
+occult hypoperfusion
+oliguria
+osteomyelitis
+oxygen delivery failure
+pancreatitis
+paracentesis
+perforation
+peritonitis
+perrl
+persistent acidosis
+persistent hypotension
+phenylephrine
+plasma-lyte
+pn
+pneumonia
+pod
+poor perfusion
+positive balance
+post-cardiac surgery
+post-op
+prbc
+pressors
+profound hypoxia
+pseudomonas
+pulmonary edema
+pulmonary fibrosis
+pupils fixed
+refractory
+refractory hypotension
+refractory shock
+renal failure
+renal replacement therapy
+renal tubular acidosis
+resolved
+respiratory distress
+respiratory failure
+responsive to fluids
+rhabdomyolysis
+rosc
+s/p cabg
+sah
+salicylate
+sedated
+sedation
+sepsis
+septic arthritis
+septic shock
+severe anemia
+severe hypoxemia
+shock
+sodium bicarbonate
+solid organ transplant
+somnolent
+starvation ketosis
+status epilepticus
+stem cell transplant
+still acidotic
+stroke
+subarachnoid hemorrhage
+subdural
+surgical infection
+tension pneumothorax
+tham
+third space
+third spacing
+thrombocytopenia
+tissue hypoxia
+topiramate
+transplant
+trauma
+unresponsive
+unresponsiveness
+uremic acidosis
+urosepsis
+vap
+vasopressin
+vasopressor
+vented
+volume overload
+vre
+weaned
+weight loss
+worsening
+wound infection
