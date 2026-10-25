@@ -55,8 +55,8 @@ def main():
     pos = {sid: i for i, sid in enumerate(feat.index)}
     iv = [pos[n] for n in names['val']]; it = [pos[n] for n in names['test']]; yt = y[it]; yv = y[iv]
     def utde(tag):
-        r = [x for x in glob.glob(str(M / f'run/sofa28_W{W}{tag}/ihm/**/2e-05*/'), recursive=True) if glob.glob(x + 'test_logits_42.npz')][0]
-        z = np.load(r + 'test_logits_42.npz'); ck = torch.load(glob.glob(r + '*/42.pth.tar')[0], map_location='cpu', weights_only=False); return np.array(ck['logits']), z['logits']
+        r = [x for x in glob.glob(str(M / f'run/sofa28_W{W}{tag}/ihm/**/2e-05*/'), recursive=True) if os.path.exists(os.path.join(x, 'test_logits_42.npz'))][0]
+        z = np.load(os.path.join(r, 'test_logits_42.npz')); ck = torch.load(glob.glob(os.path.join(r, '*', '42.pth.tar'))[0], map_location='cpu', weights_only=False); return np.array(ck['logits']), z['logits']
     u_va, u_te = utde('')
     t0_va, t0_te = res['TabPFN (68 structured)']; t1_va, t1_te = res['TabPFN + vitals aggregates']
     sel = lambda arr, idx_mask, order: pd.Series(arr, index=feat.index[idx_mask]).loc[order].values
