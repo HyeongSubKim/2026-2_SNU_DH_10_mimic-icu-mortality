@@ -41,12 +41,14 @@ def main():
     t_te, t_va = tab.loc[names['test'], TIER].values, tab.loc[names['val'], TIER].values
     y, y_va = tab.loc[names['test'], 'y28'].values, tab.loc[names['val'], 'y28'].values
     preds = {'TabPFN (structured)': t_te}
-    for tag, label in (('_tsonly', 'UTDE time series only'), ('', 'UTDE time series + notes'), ('_tabemb', 'TabPFN-embedding UTDE (TabPFN tokens + notes)')):
+    for tag, label in (('_tsonly', 'UTDE time series only'), ('', 'UTDE time series + notes'), ('_tabemb', 'TabPFN-embedding UTDE (TabPFN tokens + notes)'), ('_tabemb3', 'TabPFN-embedding UTDE, 3 streams (TabPFN tokens + time series + notes)')):
         r = utde_run(tag, W)
         if r is None:
             continue
         p_te, yy, p_va = r; assert (yy == y).all() and len(p_va) == len(y_va)
         preds[label] = p_te
+        if tag.startswith('_tabemb'):
+            continue                                           # the embedding models already contain TabPFN; no stacking
         st = LogisticRegression(C=1.0, max_iter=1000).fit(np.c_[LG(t_va), LG(p_va)], y_va)
         preds[f'late fusion TabPFN + {label}'] = st.predict_proba(np.c_[LG(t_te), LG(p_te)])[:, 1]
     rows = []; md = [f'# Fusion variants, W = {W} h (test n = {len(y)}, 28-day mortality {y.mean():.3f}); stacker fitted on validation', '',
