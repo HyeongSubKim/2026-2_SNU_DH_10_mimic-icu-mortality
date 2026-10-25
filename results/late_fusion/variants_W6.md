@@ -7,3 +7,5 @@
 | late fusion TabPFN + UTDE time series only | 0.841 | 0.697 | +0.009 [-0.003, +0.020] |
 | UTDE time series + notes | 0.798 | 0.618 | -0.034 [-0.066, -0.003] |
 | late fusion TabPFN + UTDE time series + notes | 0.845 | 0.704 | +0.014 [-0.002, +0.029] |
+| UTDE with the tabular variable set (15 channels: SOFA inputs, lactate, BE, vent, age, sex) + notes | 0.823 | 0.658 | -0.009 [-0.031, +0.013] |
+| late fusion TabPFN + UTDE with the tabular variable set (15 channels: SOFA inputs, lactate, BE, vent, age, sex) + notes | 0.839 | 0.688 | +0.008 [-0.008, +0.023] |

@@ -48,5 +48,25 @@
    -0.00223656286224321,
    0.02904715598389016
   ]
+ },
+ {
+  "model": "UTDE with the tabular variable set (15 channels: SOFA inputs, lactate, BE, vent, age, sex) + notes",
+  "auroc": 0.8227976643818228,
+  "auprc": 0.6580617905061418,
+  "d_vs_tabpfn": -0.00892495834819221,
+  "ci": [
+   -0.030517985224876774,
+   0.01341084192284879
+  ]
+ },
+ {
+  "model": "late fusion TabPFN + UTDE with the tabular variable set (15 channels: SOFA inputs, lactate, BE, vent, age, sex) + notes",
+  "auroc": 0.8392725912267339,
+  "auprc": 0.6877913292567419,
+  "d_vs_tabpfn": 0.007560313087819059,
+  "ci": [
+   -0.007505270824894569,
+   0.02323262332210792
+  ]
  }
 ]
