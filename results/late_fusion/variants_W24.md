@@ -8,3 +8,4 @@
 | UTDE time series + notes | 0.844 | 0.680 | +0.007 [-0.013, +0.026] |
 | late fusion TabPFN + UTDE time series + notes | 0.860 | 0.707 | +0.023 [+0.010, +0.035] |
 | TabPFN-embedding UTDE (TabPFN tokens + notes) | 0.836 | 0.671 | -0.001 [-0.006, +0.004] |
+| TabPFN-embedding UTDE, 3 streams (TabPFN tokens + time series + notes) | 0.868 | 0.731 | +0.031 [+0.015, +0.046] |
