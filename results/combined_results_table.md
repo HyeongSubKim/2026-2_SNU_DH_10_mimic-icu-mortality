@@ -12,6 +12,11 @@ AUROC (AUPRC); Δ = paired-bootstrap ΔAUROC vs TabPFN v2 (tier 4 + age/sex) [95
 | 1 | UTDE + term-guided global attention (N01–N50) | Multimodal | – | – | 0.843 (.687) | +0.006 ‡ |
 | 1 | **Late fusion TabPFN + UTDE** | Multimodal | **0.845 (.704)** | +0.014 [−0.002, +0.029] | **0.860 (.707)** | **+0.023 [+0.011, +0.035]** |
 | 1 | Late fusion TabPFN + UTDE (term attention) | Multimodal | – | – | 0.857 (.706) | +0.020 ‡ |
+| 1 | **TabPFN + vital-sign aggregates (113 feats)** — fair structured baseline | Unimodal (structured) | 0.842 (.705) | +0.010 [−0.003, +0.024] | 0.852 (.684) | +0.015 [+0.007, +0.023] |
+| 1 | UTDE, TabPFN's variable set (15 ch) + notes | Multimodal | 0.823 (.658) | −0.009 [−0.031, +0.013] | 0.826 (.658) | −0.011 [−0.025, +0.002] |
+| 1 | Late fusion TabPFN + UTDE (15 ch) | Multimodal | 0.839 (.688) | +0.008 [−0.008, +0.023] | 0.841 (.680) | +0.003 [−0.002, +0.009] |
+| 1 | Late fusion TabPFN+vitals + UTDE (21 ch) | Multimodal | 0.844 (.710) | +0.012 [−0.009, +0.032] | 0.863 (.709) | +0.026 [+0.013, +0.039] |
+| 1 | **TabPFN-in-UTDE, 3 streams (TabPFN tokens + TS + notes)** | Multimodal | 0.836 (.700) | +0.004 [−0.012, +0.020] | **0.868 (.731)** | **+0.031 [+0.015, +0.046]** |
 | 2 | Record2Vec B0: raw serialisation → Qwen3-Emb-4B → LR (no summary) | Unimodal (text of vitals) | 0.757 (.551) | −0.075 [−0.100, −0.050] | 0.760 (.541) | −0.078 [−0.102, −0.054] |
 | 2 | Record2Vec B: LLM summary (narrative) → Qwen3-Emb-4B → LR | Unimodal (text of vitals) | 0.744 (.542) | −0.088 [−0.121, −0.056] | 0.699 (.474) | −0.138 [−0.165, −0.111] |
 | 2 | Record2Vec B: LLM summary (schema) → Qwen3-Emb-4B → LR | Unimodal (text of vitals) | 0.728 (.530) | −0.105 [−0.137, −0.072] | 0.736 (.508) | −0.101 [−0.127, −0.075] |

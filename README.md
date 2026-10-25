@@ -366,3 +366,34 @@ age/sex to the UTDE input, and raise `num_of_notes` (63 % of 24 h stays have mor
 ## License
 
 Code in this repository is released under the Apache License 2.0 (see `LICENSE`). MIMIC-III data are not included and remain subject to the PhysioNet Credentialed Health Data Use Agreement; the UTDE reference implementation (XZhang97666/MultimodalMIMIC) is used as an external dependency via the patch in `utde/` and keeps its own terms.
+
+### Variable-fair comparison, and TabPFN inside the UTDE architecture (`23_`–`25_*.py`)
+
+The UTDE input (21 benchmark channels) contained vital signs that the structured model never saw (HR, RR, SpO2,
+temperature, non-invasive / arterial SBP–DBP, O2 flow). Two controls make the comparison fair, and two architectures put
+TabPFN *inside* UTDE (frozen TabPFN v2 embeddings, 8 members × 192-d per stay, as tokens of the cross-attention; notes
+branch unchanged). Test AUROC (AUPRC), single seed:
+
+| model | 6 h | Δ vs TabPFN | 24 h | Δ vs TabPFN |
+|---|---|---|---|---|
+| TabPFN (68 structured features) | 0.832 (.681) | – | 0.837 (.673) | – |
+| **TabPFN + vital-sign aggregates (113 features)** — fair structured baseline | **0.842 (.705)** | +0.010 [−0.003, +0.024] | **0.852 (.684)** | +0.015 [+0.007, +0.023] |
+| UTDE, 21 channels + notes | 0.798 (.618) | −0.034 | 0.844 (.680) | +0.007 |
+| UTDE, time series only (no note branch) | 0.797 (.642) | −0.035 | 0.827 (.643) | −0.009 |
+| UTDE, TabPFN's variable set (15 channels: SOFA inputs, lactate, BE, vent, age, sex) + notes | 0.823 (.658) | −0.009 | 0.826 (.658) | −0.011 |
+| late fusion TabPFN + UTDE (21 ch) | 0.845 (.704) | +0.014 [−0.002, +0.029] | 0.860 (.707) | +0.023 [+0.010, +0.035] |
+| late fusion TabPFN + UTDE (15 ch) | 0.839 (.688) | +0.008 [−0.008, +0.023] | 0.841 (.680) | +0.003 [−0.002, +0.009] |
+| late fusion TabPFN+vitals + UTDE (21 ch) | 0.844 (.710) | +0.002 vs TabPFN+vitals | 0.863 (.709) | **+0.012 [+0.002, +0.021] vs TabPFN+vitals** |
+| TabPFN-in-UTDE, *replace* (TabPFN tokens + notes) | – | | 0.836 (.671) | −0.001 (collapses onto TabPFN, logit corr. 0.98) |
+| **TabPFN-in-UTDE, *3 streams* (TabPFN tokens + 21-ch time series + notes)** | 0.836 (.700) | +0.004 [−0.012, +0.020] | **0.868 (.731)** | **+0.031 [+0.015, +0.046]**; +0.016 [+0.003, +0.028] vs TabPFN+vitals; +0.008 [−0.003, +0.020] vs late fusion |
+
+Reading: (i) much of the earlier late-fusion gain was the extra vital-sign *variables*, not the architecture — adding
+their window aggregates to TabPFN alone gives 0.842 / 0.852, and a UTDE restricted to TabPFN's variables adds only
++0.008 / +0.003 in fusion; (ii) against the fair baseline the multimodal gain is +0.002 (6 h, ns) and +0.012 (24 h,
+significant) for late fusion, +0.016 (24 h) for the 3-stream model — notes and trajectories matter only once a day of
+data has accumulated; (iii) a frozen TabPFN can be used as the tabular stream of UTDE, but only if the time-series
+stream is kept: with TabPFN tokens alone the network ignores the notes (strong-modality starvation), with all three
+streams it is the best single model at 24 h (0.868; validation 0.808 → 0.832 over 6 epochs). At 6 h nothing beats
+TabPFN + vitals. Caveats: one seed per model; the 6 h *replace* run was not repeated after a positional-table fix.
+Details: `results/late_fusion/variants_W{6,24}.md`, `results/tabpfn_vitals/summary_W{6,24}.md`; UTDE adapter flags
+`--tab_emb`, `--tab_emb_mode`, dataset `--channel-set sofa`.
