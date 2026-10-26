@@ -71,5 +71,29 @@ stacker coefficients TabPFN 0.55, UTDE-SOFA 0.37; mean |SHAP| TabPFN 0.71, UTDE-
 
 mean |Δlogit| when removed: TabPFN tokens 2.00, notes 0.65
 
-## 4. TabPFN-in-UTDE, 3 streams (TabPFN tokens + 15-ch time series + notes): not available yet
+## 4. TabPFN-in-UTDE, 3 streams (TabPFN tokens + 15-ch time series + notes) — occlusion
+
+| full | without TabPFN tokens | without notes | without TabPFN tokens and notes | without time series |
+|---|---|---|---|---|
+| 0.856 | 0.765 (−0.091) | 0.840 (−0.016) | 0.752 | 0.852 (−0.005) |
+
+mean |Δlogit| when removed: TabPFN tokens 1.27, notes 0.94, time series 0.29
+
+| channel | mean abs Δlogit | AUROC drop |
+|---|---|---|
+| Vent | 0.161 | +0.000 |
+| Age | 0.108 | -0.002 |
+| GCS | 0.099 | +0.006 |
+| PaO2 | 0.077 | +0.003 |
+| Bilirubin | 0.076 | +0.001 |
+| FiO2 | 0.064 | -0.000 |
+| Urine | 0.060 | +0.000 |
+| Sex | 0.054 | +0.000 |
+| BaseExcess | 0.052 | +0.000 |
+| MeanABP | 0.050 | +0.002 |
+| Lactate | 0.050 | -0.000 |
+| Vasopressor | 0.047 | +0.001 |
+| Platelets | 0.040 | -0.001 |
+| MeanBP | 0.037 | +0.000 |
+| Creatinine | 0.037 | -0.001 |
 
