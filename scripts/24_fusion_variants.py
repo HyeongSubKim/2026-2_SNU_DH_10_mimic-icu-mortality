@@ -41,7 +41,7 @@ def main():
     t_te, t_va = tab.loc[names['test'], TIER].values, tab.loc[names['val'], TIER].values
     y, y_va = tab.loc[names['test'], 'y28'].values, tab.loc[names['val'], 'y28'].values
     preds = {'TabPFN (structured)': t_te}
-    for tag, label in (('_tsonly', 'UTDE time series only'), ('', 'UTDE time series + notes'), ('_sofavars', 'UTDE with the tabular variable set (15 channels: SOFA inputs, lactate, BE, vent, age, sex) + notes'), ('_tabemb', 'TabPFN-embedding UTDE (TabPFN tokens + notes)'), ('_tabemb3', 'TabPFN-embedding UTDE, 3 streams (TabPFN tokens + time series + notes)')):
+    for tag, label in (('_tsonly', 'UTDE time series only'), ('', 'UTDE time series + notes'), ('_sofavars', 'UTDE with the tabular variable set (15 channels: SOFA inputs, lactate, BE, vent, age, sex) + notes'), ('_tabemb', 'TabPFN-embedding UTDE (TabPFN tokens + notes)'), ('_tabemb3', 'TabPFN-embedding UTDE, 3 streams (TabPFN tokens + time series + notes)'), ('_tabemb3_sofavars', 'TabPFN-embedding UTDE, 3 streams, tabular variable set (TabPFN tokens + 15-ch time series + notes)')):
         r = utde_run(tag, W)
         if r is None:
             continue
