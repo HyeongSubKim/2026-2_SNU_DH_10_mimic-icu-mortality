@@ -63,7 +63,13 @@ stacker coefficients TabPFN 0.55, UTDE-SOFA 0.37; mean |SHAP| TabPFN 0.71, UTDE-
 | 14 | lactate_min (T) | 0.093 |
 | 15 | urine_total (T) | 0.093 |
 
-## 4. TabPFN-in-UTDE, replace (TabPFN tokens + notes): not available yet
+## 4. TabPFN-in-UTDE, replace (TabPFN tokens + notes) — occlusion
+
+| full | without TabPFN tokens | without notes | without TabPFN tokens and notes |
+|---|---|---|---|
+| 0.836 | 0.562 (−0.274) | 0.834 (−0.002) | 0.494 |
+
+mean |Δlogit| when removed: TabPFN tokens 2.00, notes 0.65
 
 ## 4. TabPFN-in-UTDE, 3 streams (TabPFN tokens + 15-ch time series + notes): not available yet
 
