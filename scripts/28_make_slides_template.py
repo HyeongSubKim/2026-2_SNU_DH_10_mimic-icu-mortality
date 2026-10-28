@@ -152,7 +152,7 @@ tbox(s, 8.1, 1.6, 4.6, 0.3, '통제 1 — UTDE-SOFA', 15, 'blue', 'blue')
 tbox(s, 8.1, 1.95, 4.6, 1.2, 'UTDE 채널을 TabPFN의 변수로 제한: SOFA 입력 10 + 환기 + lactate + BE + age + sex = **15채널**; 노트 stream은 그대로', 12)
 tbox(s, 8.1, 3.2, 4.6, 0.3, '통제 2 — TabPFN + vitals', 15, 'amber', 'amber')
 tbox(s, 8.1, 3.55, 4.6, 1.2, '반대로 TabPFN에 활력징후 9종의 min·max·mean·last·count **45열**을 추가 (113열)', 12)
-tbox(s, 0.6, 4.2, 7.2, 2.4, '**평가** · 같은 테스트셋, paired bootstrap 2,000회, Δ vs TabPFN(68) 또는 vs TabPFN + vitals\n**해석** · 세 모델 모두에 어트리뷰션 — TabPFN permutation SHAP, UTDE occlusion(모달리티·채널·TabPFN 토큰), 스태커 정확 SHAP + feature-level 분해\n**기대** · 변수를 맞추면 "구조의 효과"만 남음: 멀티모달 이득이 남으면 노트·궤적의 가치, 사라지면 변수의 가치였던 것', 12)
+tbox(s, 0.6, 4.2, 7.2, 2.4, '**평가** · 같은 테스트셋, paired bootstrap 2,000회, Δ vs TabPFN(68) 또는 vs TabPFN + vitals\n**해석** · 모델 간 비교는 한 방법으로 — occlusion(TabPFN 변수군 → NaN, UTDE 채널·노트·TabPFN 토큰 → 0; Δlogit·AUROC 감소); 스태커 정확 SHAP; TabPFN 단독 심층 해석만 permutation SHAP\n**기대** · 변수를 맞추면 "구조의 효과"만 남음: 멀티모달 이득이 남으면 노트·궤적의 가치, 사라지면 변수의 가치였던 것', 12)
 tbox(s, 0.6, 6.85, 12, 0.3, 'scripts/13_build_utde_dataset.py --channel-set sofa · 25_tabpfn_vitals.py', 10, 'ref')
 
 # ================================================================ 3a0. unimodal tier table with CIs (template slide-8 style)
@@ -190,27 +190,33 @@ table(s, 0.6, 4.1, 12.1, [['Method', '6 h', 'Δ vs TabPFN+vitals', '24 h', 'Δ v
     [3.8, 1.4, 2.75, 1.4, 2.75], 10, bold_rows=(1, 4), red={(4, 3), (4, 4)})
 tbox(s, 0.6, 5.85, 12.1, 1.1, '· 변수를 맞추면 늦은 융합·replace는 TabPFN을 넘지 못함; **3-stream만 24 h에서 유의** (+0.019; 늦은 융합 대비 +0.016 [+0.006, +0.026])\n· 활력징후 집계만 TabPFN에 더해도 +0.010 / +0.015 — 공정 기준선 위의 멀티모달 순이득은 **+0.01~0.02, 24 h에서만** · test n = 853 / 1,374 · single seed', 11)
 
-# ================================================================ 3b. SHAP headline (template slide-9 style: two images)
-s = bar_slide('3. Result and Discussion', 'Shap value', '24 h · 변수를 맞추면 모든 모델이 **GCS·age·lactate·소변량**에 의존 — 구조가 바꾸는 것은 "무엇을 보느냐"가 아니라 "어떻게 합치느냐"')
-s.shapes.add_picture(str(R / 'fusion_shap/tabpfn_shap_W24.png'), Inches(0.2), Inches(1.6), width=Inches(6.9))
-s.shapes.add_picture(str(R / 'unified_shap/fusion_sofa_feature_beeswarm_W24.png'), Inches(7.6), Inches(1.6), height=Inches(5.3))
-tbox(s, 0.2, 5.3, 6.9, 0.4, 'TabPFN (68 features) — permutation SHAP, 24 h', 12, 'ink', align=PP_ALIGN.CENTER)
-tbox(s, 7.6, 6.95, 5.5, 0.35, 'Late fusion TabPFN + UTDE-SOFA — feature-level, 24 h', 12, 'ink', align=PP_ALIGN.CENTER)
-tbox(s, 0.2, 5.75, 6.9, 1.2, '· TabPFN: gcs_last ≫ age > urine_n · gcs_count · lactate · BE (6 h: age ≈ gcs_last)\n· 융합: gcs_last (T) 0.80 ≫ age (T) 0.32 > notes (U) 0.24 > GCS (U) 0.23 — GCS·age가 양 경로로 중복, UTDE 경로의 고유 기여는 노트뿐\n· 측정 횟수 feature(urine_n, gcs_count)가 상위 — 기록 패턴 학습 (limitation)', 11)
+# ================================================================ 3b. attribution headline — both sides occlusion (same method, same units)
+s = bar_slide('3. Result and Discussion', 'Attribution (occlusion) — TabPFN vs late fusion, 24 h', '같은 방법(occlusion: 변수군 제거 → Δlogit)으로 두 모델을 비교 · 모든 모델이 **GCS·age·소변량·lactate**에 의존 — 구조가 바꾸는 것은 "무엇을 보느냐"가 아니라 "어떻게 합치느냐"')
+s.shapes.add_picture(str(R / 'unified_shap/tabpfn_occlusion_beeswarm_W24.png'), Inches(1.1), Inches(1.45), height=Inches(3.8))
+s.shapes.add_picture(str(R / 'unified_shap/fusion_sofa_feature_occlusion_W24.png'), Inches(7.6), Inches(1.6), height=Inches(5.3))
+tbox(s, 0.2, 5.3, 6.9, 0.4, 'TabPFN (68 features, 16 변수군) — variable-group occlusion, 24 h', 12, 'ink', align=PP_ALIGN.CENTER)
+tbox(s, 7.6, 6.95, 5.5, 0.35, 'Late fusion TabPFN + UTDE-SOFA — feature-level, (T)·(U) 모두 occlusion, 24 h', 12, 'ink', align=PP_ALIGN.CENTER)
+tbox(s, 0.2, 5.75, 6.9, 1.2, '· occlusion = 변수군의 열을 NaN(미측정)으로 바꾸고 재예측, Δlogit = logit(full) − logit(제거) · UTDE는 채널 값·마스크를 0으로\n· TabPFN: GCS 0.77 ≫ age 0.43 > urine 0.34 > lactate 0.27 ≈ MAP 0.25 (mean |Δlogit|)\n· 융합: gcs (T) 0.42 > notes (U) 0.24 ≈ age (T) 0.24 ≈ GCS (U) 0.23 — GCS·age가 양 경로로 중복, UTDE 경로의 고유 기여는 노트뿐 · 환기(vent) 채널은 두 모델 모두 로짓을 낮춤', 11)
 
-s = bar_slide('3. Result and Discussion', 'Shap value — 모델별 어트리뷰션 요약', 'UTDE-SOFA 채널 occlusion(24 h)과 다섯 모델의 요약표')
+s = bar_slide('3. Result and Discussion', 'Attribution (occlusion) — 같은 변수를 뺐을 때의 AUROC 감소, 24 h', 'TabPFN: 변수군 열 → NaN / UTDE-SOFA: 채널 → 0 · 괄호는 mean |Δlogit| · 같은 테스트셋 1,374명')
+table(s, 0.6, 1.5, 6.2, [['제거한 변수', 'TabPFN', 'UTDE-SOFA'], ['GCS', '−0.059 (0.77)', '−0.057 (0.62)'], ['Age', '−0.017 (0.43)', '−0.020 (0.48)'], ['Urine', '−0.016 (0.34)', '−0.005 (0.41)'],
+    ['SOFA 구성점수 7열', '−0.009 (0.15)', '–'], ['MeanBP', '−0.005 (0.25)', '−0.005 (0.27)'], ['Lactate', '−0.002 (0.27)', '−0.008 (0.29)'], ['PaO2 / Bilirubin', '−0.003 / −0.003', '−0.008 / −0.007'],
+    ['Vent / Vasopressor / Sex', '0.000 / +0.001 / 0.000', '−0.003 / −0.002 / 0.000'], ['notes', '–', '−0.023 (0.94)']], [2.6, 1.8, 1.8], 11, bold_rows=(1, 9), red={(9, 2)})
+tbox(s, 7.1, 1.5, 5.9, 5.2, '· **순위가 일치** — 두 모델 모두 GCS ≫ age > 소변량 > 나머지(각 ≤ 0.01). 같은 변수를 주면 구조(TabPFN vs mTAND+Longformer)와 무관하게 같은 변수에 의존\n· **lactate·PaO2·bilirubin**은 UTDE가 더 의존(−0.008 vs −0.002~−0.003) — TabPFN은 SOFA 구성점수 열(−0.009)로 같은 정보를 받음\n· **notes(−0.023)**는 UTDE-SOFA에서 GCS 다음으로 큰 단일 입력 — TabPFN에는 없는 유일한 정보원\n· 제거해도 AUROC가 거의 안 변하는 변수(vent·vasopressor·sex·creatinine)는 두 모델 공통 → 중복 정보 또는 약한 신호\n· 주의: occlusion은 "그 변수를 빼면 얼마나 나빠지나"(재학습 없음)이지 "그 변수가 얼마나 정보를 담고 있나"가 아님 — 중복 변수는 과소평가됨', 12)
+
+s = bar_slide('3. Result and Discussion', 'Attribution — 모델별 요약 (24 h)', 'UTDE-SOFA 채널 occlusion과 다섯 모델의 요약표 · TabPFN 행도 occlusion 기준')
 s.shapes.add_picture(str(R / 'unified_shap/utde_sofa_beeswarm_W24.png'), Inches(0.2), Inches(1.55), height=Inches(4.0))
 tbox(s, 0.2, 5.55, 5.7, 0.35, 'UTDE-SOFA — channel occlusion, 24 h (0/1 채널은 창 내 유무로 채색)', 11, 'ink', align=PP_ALIGN.CENTER)
-table(s, 6.1, 1.6, 6.9, [['model', 'drives it (24 h)', 'notes removed\n(6 h / 24 h)'],
-    ['TabPFN', 'gcs_last ≫ age > urine_n, gcs_count, lactate, BE', '–'],
-    ['UTDE-SOFA', 'GCS (−0.057) > Age (−0.020) > lactate, PaO2, bilirubin', '−0.018 / −0.023'],
-    ['Late fusion', 'TabPFN 로짓 61 % (6 h 39 %); 로짓 상관 0.91', 'via UTDE logit'],
-    ['TabPFN-in-UTDE replace', 'TabPFN 토큰 −0.27; 노트 branch 미사용', '−0.001 / −0.002'],
-    ['TabPFN-in-UTDE 3-stream', 'TabPFN 토큰 −0.091 > 노트 −0.016 > 시계열 −0.005', '−0.007 / −0.016']], [1.9, 3.6, 1.4], 10, bold_rows=(5,), red={(5, 2)})
-tbox(s, 6.1, 4.3, 6.9, 2.4, '· UTDE-SOFA에서도 GCS·Age가 1·2위 — 같은 변수를 주면 TabPFN과 같은 순서로 의존\n· 6 h에서는 Age ≈ GCS가 공동 1위 (TabPFN 6 h와 동일)\n· 노트 제거 시 손실은 −0.02 수준으로 21채널 UTDE와 같음 — 노트의 몫은 변수 통일과 무관\n· replace vs 3-stream: 노트 사용 여부가 성능 차이(0.836 vs 0.856)를 설명', 11)
+table(s, 6.1, 1.6, 6.9, [['model (method)', 'drives it (24 h)', 'notes removed\n(6 h / 24 h)'],
+    ['TabPFN (group occlusion)', 'GCS (−0.059) ≫ age (−0.017) ≈ urine (−0.016) > SOFA 점수 (−0.009)', '–'],
+    ['UTDE-SOFA (channel occlusion)', 'GCS (−0.057) > Age (−0.020) > lactate, PaO2, bilirubin', '−0.018 / −0.023'],
+    ['Late fusion (stacker 정확 SHAP)', 'TabPFN 로짓 61 % (6 h 39 %); 로짓 상관 0.91', 'via UTDE logit'],
+    ['TabPFN-in-UTDE replace (occlusion)', 'TabPFN 토큰 −0.27; 노트 branch 미사용', '−0.001 / −0.002'],
+    ['TabPFN-in-UTDE 3-stream (occlusion)', 'TabPFN 토큰 −0.091 > 노트 −0.016 > 시계열 −0.005', '−0.007 / −0.016']], [2.3, 3.2, 1.4], 10, bold_rows=(5,), red={(5, 2)})
+tbox(s, 6.1, 4.4, 6.9, 2.3, '· 모델 간 비교(이 표·앞 두 슬라이드)는 모두 occlusion — 단위(AUROC 감소·Δlogit)와 기준(제거)이 같음\n· 스태커는 입력이 2개(두 로짓)인 선형 모델이라 정확 SHAP = 계수 × (로짓 − 평균); 수치 비교가 아닌 비중 표시용\n· 6 h에서는 TabPFN·UTDE 모두 Age ≈ GCS가 공동 1위\n· replace vs 3-stream: 노트 사용 여부가 성능 차이(0.836 vs 0.856)를 설명', 11)
 
 # ================================================================ 3c. TabPFN-in-UTDE attribution
-s = bar_slide('3. Result and Discussion', 'Shap value — TabPFN-in-UTDE: replace는 노트를 버리고, 3-stream은 노트를 쓴다', 'TabPFN 토큰·노트·시계열 stream을 각각 제거했을 때의 test AUROC (24 h)')
+s = bar_slide('3. Result and Discussion', 'Attribution (occlusion) — TabPFN-in-UTDE: replace는 노트를 버리고, 3-stream은 노트를 쓴다', 'TabPFN 토큰·노트·시계열 stream을 각각 제거했을 때의 test AUROC (24 h)')
 table(s, 0.6, 1.6, 6.0, [['제거 대상 (24 h)', 'replace', '3-stream'], ['없음 (전체)', '0.836', '0.856'], ['TabPFN 토큰', '0.562 (−0.274)', '0.765 (−0.091)'],
     ['노트', '0.834 (−0.002)', '0.840 (−0.016)'], ['시계열 stream', '(없음)', '0.852 (−0.005)'], ['토큰 + 노트', '0.494', '0.752']], [2.4, 1.8, 1.8], 12, red={(3, 2)})
 tbox(s, 0.6, 3.6, 6.0, 3.2, '· replace: TabPFN 토큰이 처음부터 완성된 저잡음 신호 → 네트워크가 그것만 통과시키고 노트 branch는 학습 신호를 못 받음(검증 AUROC epoch 2 이후 정체)\n· 3-stream: 시계열 branch가 "아직 배워야 하는" 쪽이라 gradient가 계속 흐르고 노트 branch도 함께 학습 → 노트 −0.016 (6 h −0.007)\n· 시계열 stream의 직접 기여는 −0.005, 채널별 ≤ 0.006 — 정보는 TabPFN 토큰과 중복이지만 **노트 branch를 깨우는 역할**\n· 결론: 같은 정보에서 3-stream의 +0.019는 "TabPFN 표현을 조건으로 노트를 읽는 것"에서 나옴', 12)
@@ -233,13 +239,18 @@ for ph in list(s.placeholders):
     ph._element.getparent().remove(ph._element)
 tbox(s, 5.74, 3.48, 1.9, 0.6, '**Appendix**', 20, 'ink', align=PP_ALIGN.CENTER)
 for W in (6, 24):
-    s = bar_slide('3. Result', f'Shap value- {W}h / Unimodal')
-    s.shapes.add_picture(str(R / f'fusion_shap/tabpfn_shap_W{W}.png'), Inches(0.0), Inches(1.35), height=Inches(5.6))
+    s = bar_slide('3. Result', f'Attribution (occlusion) - {W}h / Unimodal')
+    s.shapes.add_picture(str(R / f'unified_shap/tabpfn_occlusion_beeswarm_W{W}.png'), Inches(0.0), Inches(1.35), height=Inches(5.6))
     s.shapes.add_picture(str(R / f'unified_shap/utde_sofa_beeswarm_W{W}.png'), Inches(6.2), Inches(1.35), height=Inches(5.6))
-    s = bar_slide('3. Result', f'Shap value- {W}h / Multimodal')
-    s.shapes.add_picture(str(R / f'unified_shap/fusion_sofa_feature_beeswarm_W{W}.png'), Inches(0.0), Inches(1.3), height=Inches(5.7))
+    tbox(s, 0.0, 7.0, 6.2, 0.3, f'TabPFN, variable-group occlusion ({W}h)', 12, 'ink', align=PP_ALIGN.CENTER); tbox(s, 6.2, 7.0, 7.0, 0.3, f'UTDE-SOFA, channel occlusion ({W}h)', 12, 'ink', align=PP_ALIGN.CENTER)
+    s = bar_slide('3. Result', f'Attribution (occlusion) - {W}h / Multimodal')
+    s.shapes.add_picture(str(R / f'unified_shap/fusion_sofa_feature_occlusion_W{W}.png'), Inches(0.0), Inches(1.3), height=Inches(5.7))
     s.shapes.add_picture(str(R / f'unified_shap/tabemb3_sofa_beeswarm_W{W}.png'), Inches(5.6), Inches(1.3), height=Inches(5.7))
-    tbox(s, 0.0, 7.0, 5.4, 0.3, f'Late fusion ({W}h)', 12, 'ink', align=PP_ALIGN.CENTER); tbox(s, 5.6, 7.0, 7.6, 0.3, f'TabPFN in UTDE, 3-stream ({W}h)', 12, 'ink', align=PP_ALIGN.CENTER)
+    tbox(s, 0.0, 7.0, 5.4, 0.3, f'Late fusion, (T)·(U) occlusion ({W}h)', 12, 'ink', align=PP_ALIGN.CENTER); tbox(s, 5.6, 7.0, 7.6, 0.3, f'TabPFN in UTDE, 3-stream, occlusion ({W}h)', 12, 'ink', align=PP_ALIGN.CENTER)
+s = bar_slide('3. Result', 'TabPFN 단독 심층 해석 — permutation SHAP (feature 단위, 68 features)', 'TabPFN 전용 · SHAP(확률 단위, 모든 feature 조합 평균) — 다른 모델과 수치 비교하지 않음; 변수군 occlusion과 순위 일치(GCS ≫ age > urine > lactate)')
+for i, W in enumerate((6, 24)):
+    s.shapes.add_picture(str(R / f'fusion_shap/tabpfn_shap_W{W}.png'), Inches(0.1 + 6.6 * i), Inches(1.5), width=Inches(6.4))
+    tbox(s, 0.1 + 6.6 * i, 6.7, 6.4, 0.3, f'TabPFN permutation SHAP, {W} h', 12, 'ink', align=PP_ALIGN.CENTER)
 
 # drop every template slide except 5 (TabPFN) and 6 (UTDE); then order: setup, TabPFN, UTDE, new slides
 items = list(sld)
