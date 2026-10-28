@@ -25,3 +25,4 @@ results/**/*.npz
 !results/fusion_shap/fusion_feature_attr_W*.csv
 !results/late_fusion/variants_*.json
 results/slides/*.pptx
+!results/sofa_tiers_demo/unimodal_table_ci.json

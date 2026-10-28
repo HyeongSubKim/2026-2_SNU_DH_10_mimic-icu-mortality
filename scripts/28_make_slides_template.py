@@ -155,6 +155,22 @@ tbox(s, 8.1, 3.55, 4.6, 1.2, '반대로 TabPFN에 활력징후 9종의 min·max�
 tbox(s, 0.6, 4.2, 7.2, 2.4, '**평가** · 같은 테스트셋, paired bootstrap 2,000회, Δ vs TabPFN(68) 또는 vs TabPFN + vitals\n**해석** · 세 모델 모두에 어트리뷰션 — TabPFN permutation SHAP, UTDE occlusion(모달리티·채널·TabPFN 토큰), 스태커 정확 SHAP + feature-level 분해\n**기대** · 변수를 맞추면 "구조의 효과"만 남음: 멀티모달 이득이 남으면 노트·궤적의 가치, 사라지면 변수의 가치였던 것', 12)
 tbox(s, 0.6, 6.85, 12, 0.3, 'scripts/13_build_utde_dataset.py --channel-set sofa · 25_tabpfn_vitals.py', 10, 'ref')
 
+# ================================================================ 3a0. unimodal tier table with CIs (template slide-8 style)
+import json as _json
+U = _json.load(open(R / 'sofa_tiers_demo' / 'unimodal_table_ci.json'))
+f3 = lambda d, k: f"{d[k]:.3f} [{d[k+'_ci95'][0]:.3f}, {d[k+'_ci95'][1]:.3f}]"
+s = bar_slide('3. Result and Discussion', 'Feature selection (Unimodal) — test AUROC [95 % bootstrap CI]')
+tbox(s, 0.6, 1.05, 11.9, 0.3, 'AUROC [95 % CI] · 6 h n = 853, 24 h n = 1,374 · 1,000 bootstrap resamples', 13, 'amber', 'amber')
+rows = [['tier', 'XGB 6h', 'TabPFN 6h', 'XGB 24h', 'TabPFN 24h'],
+        ['SOFA score 단독', f3(U['sofa_alone_W6'], 'auroc'), '(same)', f3(U['sofa_alone_W24'], 'auroc'), '(same)']]
+for demo in (False, True):
+    if demo:
+        rows.append(['+age/sex', '', '', '', ''])
+    for r in [r for r in U['rows'] if r['demo'] == demo]:
+        rows.append([r['tier']] + [f"{r[k]['test_auroc']:.3f} [{r[k]['test_auroc_ci95'][0]:.3f}, {r[k]['test_auroc_ci95'][1]:.3f}]" for k in ('xgb_6', 'tabpfn_6', 'xgb_24', 'tabpfn_24')])
+table(s, 0.6, 1.4, 12.1, rows, [2.5, 2.4, 2.4, 2.4, 2.4], 11, bold_rows=(6, 10), red={(10, 2), (10, 3), (10, 4)})
+tbox(s, 0.6, 5.05, 12.1, 1.7, '· AUPRC [95 % CI] (tier 4 + age/sex): XGB 0.662 [0.604, 0.718] / 0.660 [0.610, 0.706], TabPFN 0.681 [0.621, 0.739] / 0.673 [0.621, 0.717]; SOFA 단독 0.443 [0.386, 0.500] / 0.428 [0.378, 0.481]\n· 신뢰구간 폭 ≈ ±0.03 (6 h) / ±0.02 (24 h): tier 간 차이(≤ 0.02)와 XGB–TabPFN 차이(≤ 0.015)는 모두 CI 안 — **점추정 순위는 참고용**\n· 확실한 것: 학습 모델 vs SOFA 단독 (+0.17~0.18, CI 비중첩), age/sex 추가 (+0.01~0.02, 6 h에서 더 큼)\n· 전체 표(AUPRC 포함): results/sofa_tiers_demo/unimodal_table_ci.md', 11)
+
 # ================================================================ 3a. results tables
 s = bar_slide('3. Result and Discussion', 'Quantitative results — unified variables and the fair baseline')
 tbox(s, 0.6, 1.05, 11.9, 0.3, 'Unified variable set (SOFA + lactate/BE + age/sex)', 13, 'amber', 'amber')
